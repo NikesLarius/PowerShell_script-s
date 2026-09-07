@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+    <ApplicationTitle>Script Hub</ApplicationTitle>
+    <AssemblyTitle>Script Hub</AssemblyTitle>
+    <Company>Ларионов Никита</Company>
+    <Authors>Ларионов Никита</Authors>
+    <Copyright>Copyright © 2026 Ларионов Никита (02.09.2026)</Copyright>
+    <Product>Script Hub - Windows 11 Script Launcher</Product>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WPF-UI" Version="3.0.5" />
+    <PackageReference Include="AvalonEdit" Version="6.3.0.90" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Syntax\PowerShell.xshd">
+      <LogicalName>ScriptHub.Resources.Syntax.PowerShell.xshd</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Syntax\Batch.xshd">
+      <LogicalName>ScriptHub.Resources.Syntax.Batch.xshd</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

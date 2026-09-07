@@ -1,0 +1,58 @@
+[
+  {
+    "Id": "cat-files",
+    "Name": "Файлы",
+    "Icon": "DocumentFolder24",
+    "ColorHex": "#0078D4",
+    "IsSystem": true
+  },
+  {
+    "Id": "cat-network",
+    "Name": "Сеть",
+    "Icon": "Globe24",
+    "ColorHex": "#008272",
+    "IsSystem": true
+  },
+  {
+    "Id": "cat-windows",
+    "Name": "Windows",
+    "Icon": "Desktop24",
+    "ColorHex": "#0063B1",
+    "IsSystem": true
+  },
+  {
+    "Id": "cat-1c",
+    "Name": "1С",
+    "Icon": "AppGeneric24",
+    "ColorHex": "#D83B01",
+    "IsSystem": true
+  },
+  {
+    "Id": "cat-admin",
+    "Name": "Администрирование",
+    "Icon": "Wrench24",
+    "ColorHex": "#498205",
+    "IsSystem": true
+  },
+  {
+    "Id": "cat-cleanup",
+    "Name": "Очистка",
+    "Icon": "Broom24",
+    "ColorHex": "#E81123",
+    "IsSystem": true
+  },
+  {
+    "Id": "cat-backup",
+    "Name": "Резервное копирование",
+    "Icon": "ArrowDownload24",
+    "ColorHex": "#881798",
+    "IsSystem": true
+  },
+  {
+    "Id": "cat-other",
+    "Name": "Другое",
+    "Icon": "Folder24",
+    "ColorHex": "#5C2D91",
+    "IsSystem": true
+  }
+]

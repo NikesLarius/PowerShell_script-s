@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<SyntaxDefinition name="PowerShell" extensions=".ps1;.psm1;.psd1" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="#6A9955" fontStyle="italic" />
+  <Color name="String" foreground="#CE9178" />
+  <Color name="Variable" foreground="#9CDCFE" />
+  <Color name="Keyword" foreground="#569CD6" fontWeight="bold" />
+  <Color name="Command" foreground="#DCDCAA" />
+  <Color name="Operator" foreground="#D4D4D4" />
+  <Color name="Number" foreground="#B5CEA8" />
+  <Color name="Parameter" foreground="#9CDCFE" />
+
+  <RuleSet>
+    <!-- Line comments -->
+    <Span color="Comment" begin="#" />
+
+    <!-- Block comments -->
+    <Span color="Comment" multiline="true">
+      <Begin>&lt;#</Begin>
+      <End>#&gt;</End>
+    </Span>
+
+    <!-- Strings -->
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <Span begin="`." />
+        <Span color="Variable">
+          <Begin>\$</Begin>
+          <End>\b</End>
+        </Span>
+      </RuleSet>
+    </Span>
+    <Span color="String">
+      <Begin>'</Begin>
+      <End>'</End>
+    </Span>
+
+    <!-- Variables -->
+    <Rule color="Variable">
+      \$[a-zA-Z0-9_:]+
+    </Rule>
+
+    <!-- Parameters (e.g. -Path, -Force) -->
+    <Rule color="Parameter">
+      -[a-zA-Z0-9_]+
+    </Rule>
+
+    <!-- Numbers -->
+    <Rule color="Number">
+      \b0[xX][0-9a-fA-F]+|(\b\d+(\.[0-9]+)?|\.[0-9]+)([eE][+-]?[0-9]+)?\b
+    </Rule>
+
+    <!-- Keywords -->
+    <Keywords color="Keyword">
+      <Word>if</Word>
+      <Word>else</Word>
+      <Word>elseif</Word>
+      <Word>switch</Word>
+      <Word>while</Word>
+      <Word>do</Word>
+      <Word>until</Word>
+      <Word>for</Word>
+      <Word>foreach</Word>
+      <Word>in</Word>
+      <Word>try</Word>
+      <Word>catch</Word>
+      <Word>finally</Word>
+      <Word>trap</Word>
+      <Word>data</Word>
+      <Word>return</Word>
+      <Word>continue</Word>
+      <Word>break</Word>
+      <Word>exit</Word>
+      <Word>throw</Word>
+      <Word>param</Word>
+      <Word>begin</Word>
+      <Word>process</Word>
+      <Word>end</Word>
+      <Word>dynamicparam</Word>
+      <Word>function</Word>
+      <Word>filter</Word>
+      <Word>configuration</Word>
+      <Word>class</Word>
+      <Word>enum</Word>
+      <Word>using</Word>
+    </Keywords>
+
+    <!-- Built-in Cmdlets and Utilities -->
+    <Keywords color="Command">
+      <Word>Get-ChildItem</Word>
+      <Word>ForEach-Object</Word>
+      <Word>Where-Object</Word>
+      <Word>Select-Object</Word>
+      <Word>New-Item</Word>
+      <Word>Move-Item</Word>
+      <Word>Copy-Item</Word>
+      <Word>Remove-Item</Word>
+      <Word>Set-Item</Word>
+      <Word>Get-Item</Word>
+      <Word>Get-Content</Word>
+      <Word>Set-Content</Word>
+      <Word>Add-Content</Word>
+      <Word>Clear-Content</Word>
+      <Word>Out-Null</Word>
+      <Word>Out-File</Word>
+      <Word>Write-Host</Word>
+      <Word>Write-Output</Word>
+      <Word>Write-Error</Word>
+      <Word>Write-Warning</Word>
+      <Word>Start-Process</Word>
+      <Word>Stop-Process</Word>
+      <Word>Get-Process</Word>
+      <Word>Get-Service</Word>
+      <Word>Start-Service</Word>
+      <Word>Stop-Service</Word>
+      <Word>Restart-Service</Word>
+      <Word>Test-Path</Word>
+      <Word>Split-Path</Word>
+      <Word>Join-Path</Word>
+      <Word>Invoke-RestMethod</Word>
+      <Word>Invoke-WebRequest</Word>
+    </Keywords>
+  </RuleSet>
+</SyntaxDefinition>

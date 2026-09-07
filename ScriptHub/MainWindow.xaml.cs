@@ -1,0 +1,132 @@
+using System.Windows;
+using System.Windows.Input;
+using ScriptHub.Models;
+using ScriptHub.ViewModels;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
+
+namespace ScriptHub;
+
+public partial class MainWindow : FluentWindow
+{
+    private MainViewModel? ViewModel => DataContext as MainViewModel;
+
+    public MainWindow()
+    {
+        InitializeComponent();
+        Loaded += MainWindow_Loaded;
+    }
+
+    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        SystemThemeWatcher.Watch(this, WindowBackdropType.Acrylic, true);
+        if (ViewModel != null)
+        {
+            ApplyTheme(ViewModel.SettingsVM.SelectedTheme);
+        }
+    }
+
+    public void ApplyTheme(ThemeMode themeMode)
+    {
+        var appTheme = themeMode switch
+        {
+            ThemeMode.Light => ApplicationTheme.Light,
+            ThemeMode.Dark => ApplicationTheme.Dark,
+            _ => ApplicationThemeManager.IsMatchedDark() ? ApplicationTheme.Dark : ApplicationTheme.Light
+        };
+
+        ApplicationThemeManager.Apply(appTheme, WindowBackdropType.Acrylic, true);
+        ApplicationAccentColorManager.ApplySystemAccent();
+    }
+
+    private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.Left)
+        {
+            if (e.ClickCount == 2)
+            {
+                WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+            }
+            else
+            {
+                try
+                {
+                    DragMove();
+                }
+                catch { }
+            }
+        }
+    }
+
+    private void FluentWindow_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (ViewModel == null) return;
+
+        // Ctrl + F -> Focus search
+        if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.F)
+        {
+            SearchBox.Focus();
+            SearchBox.SelectAll();
+            e.Handled = true;
+            return;
+        }
+
+        // Ctrl + N -> New script
+        if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.N)
+        {
+            ViewModel.ShowAddScriptCommand.Execute(null);
+            e.Handled = true;
+            return;
+        }
+
+        // Ctrl + O -> Import script
+        if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.O)
+        {
+            ViewModel.ShowAddScriptCommand.Execute(null);
+            e.Handled = true;
+            return;
+        }
+
+        // Ctrl + , -> Settings
+        if (Keyboard.Modifiers == ModifierKeys.Control && (e.Key == Key.OemComma || e.Key == Key.OemPeriod))
+        {
+            ViewModel.NavigateCommand.Execute("Settings");
+            e.Handled = true;
+            return;
+        }
+
+        // F5 -> Run selected script (or Save & Run if editor active)
+        if (e.Key == Key.F5)
+        {
+            if (ViewModel.IsEditorViewActive)
+            {
+                ViewModel.EditorVM.SaveAndRunCommand.Execute(null);
+            }
+            else
+            {
+                ViewModel.RunSelectedScriptCommand.Execute(null);
+            }
+            e.Handled = true;
+            return;
+        }
+
+        // Ctrl + S -> Save in Editor
+        if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.S)
+        {
+            if (ViewModel.IsEditorViewActive)
+            {
+                ViewModel.EditorVM.SaveCommand.Execute(null);
+                e.Handled = true;
+                return;
+            }
+        }
+
+        // Delete -> Delete script
+        if (e.Key == Key.Delete && !ViewModel.IsEditorViewActive && !SearchBox.IsFocused)
+        {
+            ViewModel.DeleteSelectedCommand.Execute(null);
+            e.Handled = true;
+            return;
+        }
+    }
+}

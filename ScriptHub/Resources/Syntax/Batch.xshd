@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<SyntaxDefinition name="Batch" extensions=".bat;.cmd" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="#6A9955" fontStyle="italic" />
+  <Color name="String" foreground="#CE9178" />
+  <Color name="Variable" foreground="#9CDCFE" />
+  <Color name="Keyword" foreground="#569CD6" fontWeight="bold" />
+  <Color name="Command" foreground="#DCDCAA" />
+  <Color name="Label" foreground="#D7BA7D" />
+  <Color name="Number" foreground="#B5CEA8" />
+
+  <RuleSet>
+    <!-- Comments: rem or :: -->
+    <Span color="Comment" begin="rem\b" />
+    <Span color="Comment" begin="REM\b" />
+    <Span color="Comment" begin="::" />
+
+    <!-- Strings -->
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+    </Span>
+
+    <!-- Labels -->
+    <Rule color="Label">
+      ^\s*:[a-zA-Z0-9_\-]+
+    </Rule>
+
+    <!-- Variables (%VAR%, %1, !VAR!) -->
+    <Rule color="Variable">
+      %[a-zA-Z0-9_~:$\\\.\-]+%|%[0-9*]|![a-zA-Z0-9_]+!
+    </Rule>
+
+    <!-- Numbers -->
+    <Rule color="Number">
+      \b\d+\b
+    </Rule>
+
+    <!-- Keywords & Control flow -->
+    <Keywords color="Keyword">
+      <Word>if</Word>
+      <Word>IF</Word>
+      <Word>else</Word>
+      <Word>ELSE</Word>
+      <Word>for</Word>
+      <Word>FOR</Word>
+      <Word>in</Word>
+      <Word>IN</Word>
+      <Word>do</Word>
+      <Word>DO</Word>
+      <Word>goto</Word>
+      <Word>GOTO</Word>
+      <Word>call</Word>
+      <Word>CALL</Word>
+      <Word>exit</Word>
+      <Word>EXIT</Word>
+      <Word>shift</Word>
+      <Word>SHIFT</Word>
+      <Word>defined</Word>
+      <Word>DEFINED</Word>
+      <Word>exist</Word>
+      <Word>EXIST</Word>
+      <Word>errorlevel</Word>
+      <Word>ERRORLEVEL</Word>
+      <Word>not</Word>
+      <Word>NOT</Word>
+    </Keywords>
+
+    <!-- Builtin Commands -->
+    <Keywords color="Command">
+      <Word>echo</Word>
+      <Word>ECHO</Word>
+      <Word>set</Word>
+      <Word>SET</Word>
+      <Word>setlocal</Word>
+      <Word>SETLOCAL</Word>
+      <Word>endlocal</Word>
+      <Word>ENDLOCAL</Word>
+      <Word>pause</Word>
+      <Word>PAUSE</Word>
+      <Word>cls</Word>
+      <Word>CLS</Word>
+      <Word>title</Word>
+      <Word>TITLE</Word>
+      <Word>color</Word>
+      <Word>COLOR</Word>
+      <Word>cd</Word>
+      <Word>CD</Word>
+      <Word>chdir</Word>
+      <Word>CHDIR</Word>
+      <Word>md</Word>
+      <Word>MD</Word>
+      <Word>mkdir</Word>
+      <Word>MKDIR</Word>
+      <Word>rd</Word>
+      <Word>RD</Word>
+      <Word>rmdir</Word>
+      <Word>RMDIR</Word>
+      <Word>dir</Word>
+      <Word>DIR</Word>
+      <Word>del</Word>
+      <Word>DEL</Word>
+      <Word>erase</Word>
+      <Word>ERASE</Word>
+      <Word>copy</Word>
+      <Word>COPY</Word>
+      <Word>xcopy</Word>
+      <Word>XCOPY</Word>
+      <Word>robocopy</Word>
+      <Word>ROBOCOPY</Word>
+      <Word>move</Word>
+      <Word>MOVE</Word>
+      <Word>ren</Word>
+      <Word>REN</Word>
+      <Word>rename</Word>
+      <Word>RENAME</Word>
+      <Word>type</Word>
+      <Word>TYPE</Word>
+      <Word>start</Word>
+      <Word>START</Word>
+      <Word>ping</Word>
+      <Word>PING</Word>
+      <Word>netstat</Word>
+      <Word>NETSTAT</Word>
+      <Word>ipconfig</Word>
+      <Word>IPCONFIG</Word>
+      <Word>tasklist</Word>
+      <Word>TASKLIST</Word>
+      <Word>taskkill</Word>
+      <Word>TASKKILL</Word>
+    </Keywords>
+  </RuleSet>
+</SyntaxDefinition>

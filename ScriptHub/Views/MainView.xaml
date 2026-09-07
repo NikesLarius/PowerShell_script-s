@@ -1,0 +1,256 @@
+<UserControl x:Class="ScriptHub.Views.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:controls="clr-namespace:ScriptHub.Controls"
+             xmlns:models="clr-namespace:ScriptHub.Models"
+             xmlns:conv="clr-namespace:ScriptHub.Converters"
+             AllowDrop="True"
+             Drop="UserControl_Drop"
+             DragOver="UserControl_DragOver">
+
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisConv" />
+        <conv:HexToBrushConverter x:Key="HexToBrushConv" />
+    </UserControl.Resources>
+
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <!-- Top Controls Bar: Categories & View Filters -->
+            <RowDefinition Height="Auto" />
+            <!-- Main Content: Scrollable Tiles Grid -->
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- TOP BAR: CATEGORY PILLS & SORT / VIEW CONTROLS -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="24,12">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Row 1: Section Title, Count & Sort / View Switchers -->
+                <Grid Grid.Row="0" Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="Мои скрипты"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,10,0" />
+                        <Border CornerRadius="10"
+                                Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                                Padding="8,2"
+                                VerticalAlignment="Center">
+                            <TextBlock Text="{Binding FilteredScriptsCount, StringFormat='{}{0} шт.'}"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Sort dropdown & Tile View Mode Switcher -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Quick Run Last -->
+                        <ui:Button Appearance="Secondary"
+                                   Padding="10,6"
+                                   Margin="0,0,10,0"
+                                   Command="{Binding RunLastScriptCommand}"
+                                   ToolTip="Запустить последний использованный скрипт">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Play20" FontSize="14" Margin="0,0,6,0" />
+                                <TextBlock Text="Запустить последний" FontSize="12" />
+                            </StackPanel>
+                        </ui:Button>
+
+                        <!-- Sort Order ComboBox -->
+                        <ComboBox SelectedValue="{Binding SelectedSortOrder}"
+                                  SelectedValuePath="DataContext"
+                                  Width="170"
+                                  Margin="0,0,8,0">
+                            <ComboBoxItem Content="Пользовательский" DataContext="{x:Static models:ScriptSortOrder.CustomOrder}" />
+                            <ComboBoxItem Content="По имени (А-Я)" DataContext="{x:Static models:ScriptSortOrder.NameAsc}" />
+                            <ComboBoxItem Content="По имени (Я-А)" DataContext="{x:Static models:ScriptSortOrder.NameDesc}" />
+                            <ComboBoxItem Content="По типу (PowerShell / CMD)" DataContext="{x:Static models:ScriptSortOrder.ByType}" />
+                            <ComboBoxItem Content="По категории" DataContext="{x:Static models:ScriptSortOrder.ByCategory}" />
+                            <ComboBoxItem Content="По последнему запуску" DataContext="{x:Static models:ScriptSortOrder.ByLastRun}" />
+                        </ComboBox>
+
+                        <!-- Tile Sizing Buttons -->
+                        <Border CornerRadius="6"
+                                Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                Padding="2"
+                                Margin="0,0,8,0">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:Button Appearance="Transparent"
+                                           Padding="6,4"
+                                           Command="{Binding SetTileSizeCommand}"
+                                           CommandParameter="{x:Static models:TileSize.Standard}"
+                                           ToolTip="Стандартный размер">
+                                    <ui:SymbolIcon Symbol="Grid24" FontSize="14" />
+                                </ui:Button>
+
+                                <ui:Button Appearance="Transparent"
+                                           Padding="6,4"
+                                           Command="{Binding SetTileSizeCommand}"
+                                           CommandParameter="{x:Static models:TileSize.Wide}"
+                                           ToolTip="Широкий размер">
+                                    <ui:SymbolIcon Symbol="Table24" FontSize="14" />
+                                </ui:Button>
+
+                                <ui:Button Appearance="Transparent"
+                                           Padding="6,4"
+                                           Command="{Binding SetTileSizeCommand}"
+                                           CommandParameter="{x:Static models:TileSize.Compact}"
+                                           ToolTip="Компактный размер">
+                                    <ui:SymbolIcon Symbol="AppsListDetail24" FontSize="14" />
+                                </ui:Button>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Refresh -->
+                        <ui:Button Appearance="Transparent"
+                                   Padding="6,4"
+                                   Command="{Binding RefreshCommand}"
+                                   ToolTip="Обновить статус файлов">
+                            <ui:SymbolIcon Symbol="ArrowClockwise24" FontSize="16" />
+                        </ui:Button>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Row 2: Categories Pills Filter -->
+                <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Categories}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <RadioButton Content="{Binding Name}"
+                                             GroupName="CategoryFilterGroup"
+                                             Margin="0,0,6,0"
+                                             Padding="12,4"
+                                             FontSize="12"
+                                             Click="CategoryFilter_Click"
+                                             Tag="{Binding Id}">
+                                    <RadioButton.Style>
+                                        <Style TargetType="RadioButton">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="RadioButton">
+                                                        <Border x:Name="PillBorder"
+                                                                CornerRadius="14"
+                                                                Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                                                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                                                BorderThickness="1"
+                                                                Padding="{TemplateBinding Padding}"
+                                                                Cursor="Hand">
+                                                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsChecked" Value="True">
+                                                                <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                                <Setter TargetName="PillBorder" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                                <Setter Property="Foreground" Value="White" />
+                                                            </Trigger>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </RadioButton.Style>
+                                </RadioButton>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <!-- MAIN TILES AREA -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      Padding="24"
+                      Background="Transparent"
+                      PreviewMouseLeftButtonDown="ScrollViewer_PreviewMouseLeftButtonDown">
+            <Grid Background="Transparent">
+                <!-- Empty state when no scripts -->
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Margin="0,60,0,0"
+                            Visibility="{Binding FilteredTiles.Count, Converter={StaticResource BoolToVisConv}, ConverterParameter=Inverted}">
+                    <Border Width="64" Height="64"
+                            CornerRadius="32"
+                            Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                            HorizontalAlignment="Center"
+                            Margin="0,0,0,16">
+                        <ui:SymbolIcon Symbol="DocumentSearch24" FontSize="32" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    </Border>
+                    <TextBlock Text="Скрипты не найдены"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,6" />
+                    <TextBlock Text="Перетащите файл .ps1 / .bat / .cmd в это окно или нажмите «+ Добавить скрипт»"
+                               FontSize="13"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,20" />
+                    <ui:Button Appearance="Primary"
+                               HorizontalAlignment="Center"
+                               Command="{Binding ShowAddScriptCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Add24" FontSize="16" Margin="0,0,6,0" />
+                            <TextBlock Text="Добавить скрипт" FontWeight="SemiBold" />
+                        </StackPanel>
+                    </ui:Button>
+                </StackPanel>
+
+                <!-- Tiles Grid -->
+                <ItemsControl ItemsSource="{Binding FilteredTiles}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <controls:ScriptTileControl Margin="0,0,16,16">
+                                <controls:ScriptTileControl.Style>
+                                    <Style TargetType="controls:ScriptTileControl">
+                                        <!-- Default Standard size -->
+                                        <Setter Property="Width" Value="320" />
+                                        <Setter Property="MinHeight" Value="150" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DataContext.CurrentTileSize, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="{x:Static models:TileSize.Wide}">
+                                                <Setter Property="Width" Value="440" />
+                                                <Setter Property="MinHeight" Value="150" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding DataContext.CurrentTileSize, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="{x:Static models:TileSize.Compact}">
+                                                <Setter Property="Width" Value="270" />
+                                                <Setter Property="MinHeight" Value="140" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </controls:ScriptTileControl.Style>
+                            </controls:ScriptTileControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

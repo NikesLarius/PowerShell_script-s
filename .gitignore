@@ -1,0 +1,32 @@
+## Build and Output Folders
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+publish/
+publish-single/
+*.exe
+*.dll
+*.pdb
+*.msi
+*.zip
+
+## Visual Studio & IDE Files
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+*.ide/
+
+## Runtime Logs and Backups
+Logs/
+Backups/
+*.log
+
+## OS Files
+Thumbs.db
+Desktop.ini
+.DS_Store
