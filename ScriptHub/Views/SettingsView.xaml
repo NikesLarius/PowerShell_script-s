@@ -335,16 +335,16 @@
                         </Grid.ColumnDefinitions>
 
                         <Border Grid.Column="0"
-                                Width="48" Height="48"
-                                CornerRadius="8"
-                                Background="#1A0078D4"
+                                Width="52" Height="52"
+                                CornerRadius="10"
+                                ClipToBounds="True"
                                 Margin="0,0,16,0">
-                            <ui:SymbolIcon Symbol="Flash24" FontSize="26" Foreground="#0078D4" />
+                            <Image Source="/Resources/app_icon.png" RenderOptions.BitmapScalingMode="HighQuality" />
                         </Border>
 
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="Script Hub — Windows 11 Script Launcher" FontSize="15" FontWeight="Bold" />
-                            <TextBlock Text="Версия 1.0.0 · .NET 8 · WPF + Wpf.Ui · AvalonEdit"
+                            <TextBlock Text="Версия 1.4.0 · .NET 8 · WPF + Wpf.Ui · AvalonEdit"
                                        FontSize="12"
                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                        Margin="0,2,0,0" />

@@ -19,23 +19,32 @@ public partial class MainWindow : FluentWindow
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        SystemThemeWatcher.Watch(this, WindowBackdropType.Acrylic, true);
-        if (ViewModel != null)
-        {
-            ApplyTheme(ViewModel.SettingsVM.SelectedTheme);
-        }
+        var theme = ViewModel?.SettingsVM.SelectedTheme ?? ThemeMode.System;
+        ApplyTheme(theme);
     }
 
     public void ApplyTheme(ThemeMode themeMode)
     {
-        var appTheme = themeMode switch
+        switch (themeMode)
         {
-            ThemeMode.Light => ApplicationTheme.Light,
-            ThemeMode.Dark => ApplicationTheme.Dark,
-            _ => ApplicationThemeManager.IsMatchedDark() ? ApplicationTheme.Dark : ApplicationTheme.Light
-        };
+            case ThemeMode.Light:
+                try { SystemThemeWatcher.UnWatch(this); } catch { }
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.Mica, true);
+                break;
 
-        ApplicationThemeManager.Apply(appTheme, WindowBackdropType.Acrylic, true);
+            case ThemeMode.Dark:
+                try { SystemThemeWatcher.UnWatch(this); } catch { }
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, WindowBackdropType.Mica, true);
+                break;
+
+            case ThemeMode.System:
+            default:
+                try { SystemThemeWatcher.Watch(this, WindowBackdropType.Mica, true); } catch { }
+                var isDark = ApplicationThemeManager.IsMatchedDark();
+                ApplicationThemeManager.Apply(isDark ? ApplicationTheme.Dark : ApplicationTheme.Light, WindowBackdropType.Mica, true);
+                break;
+        }
+
         ApplicationAccentColorManager.ApplySystemAccent();
     }
 

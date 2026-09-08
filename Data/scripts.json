@@ -12,14 +12,14 @@
     "IsFavorite": false,
     "RunAsAdmin": false,
     "WorkingDirectoryMode": 1,
-    "CustomWorkingDirectory": "C:\\Users\\nlarionov\\Desktop\\Тест папка\\Документы\\Документы",
+    "CustomWorkingDirectory": "C:\\Users\\nlarionov\\Downloads\\Telegram Desktop",
     "Arguments": "",
     "CustomInterpreterPath": "",
     "OrderIndex": 0,
     "CreatedAt": "2026-09-02T09:28:25.5491581Z",
-    "LastRunAt": "2026-09-02T11:43:54.9406889Z",
+    "LastRunAt": "2026-09-08T09:23:00.7528845Z",
     "LastExitCode": 0,
-    "LastDuration": "00:00:00.6759532",
+    "LastDuration": "00:00:00.9229179",
     "LastStatus": 2
   },
   {
@@ -40,9 +40,9 @@
     "CustomInterpreterPath": "",
     "OrderIndex": 2,
     "CreatedAt": "2026-09-02T10:15:07.036669Z",
-    "LastRunAt": "2026-09-03T06:50:26.2982794Z",
+    "LastRunAt": "2026-09-08T09:22:38.5847562Z",
     "LastExitCode": 0,
-    "LastDuration": "00:00:15.1890956",
+    "LastDuration": "00:00:10.5961512",
     "LastStatus": 2
   },
   {
@@ -178,9 +178,9 @@
     "CustomInterpreterPath": "",
     "OrderIndex": 9,
     "CreatedAt": "2026-09-02T16:51:04.556201Z",
-    "LastRunAt": "2026-09-03T03:28:46.7472868Z",
+    "LastRunAt": "2026-09-08T09:23:38.7298983Z",
     "LastExitCode": 0,
-    "LastDuration": "00:00:04.4232100",
+    "LastDuration": "00:00:13.0338469",
     "LastStatus": 2
   },
   {
@@ -224,9 +224,9 @@
     "CustomInterpreterPath": "",
     "OrderIndex": 11,
     "CreatedAt": "2026-09-03T05:04:28.5203826Z",
-    "LastRunAt": "2026-09-03T07:43:55.0962887Z",
+    "LastRunAt": "2026-09-08T09:25:44.4937635Z",
     "LastExitCode": 0,
-    "LastDuration": "00:00:05.2034950",
+    "LastDuration": "00:00:20.0160356",
     "LastStatus": 2
   }
 ]

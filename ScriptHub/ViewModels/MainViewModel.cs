@@ -8,6 +8,7 @@ using System.Windows.Input;
 using ScriptHub.Helpers;
 using ScriptHub.Models;
 using ScriptHub.Services.Contracts;
+using Wpf.Ui.Appearance;
 
 namespace ScriptHub.ViewModels;
 
@@ -502,7 +503,16 @@ public class MainViewModel : ViewModelBase
 
     private void ToggleTheme()
     {
-        var nextTheme = SettingsVM.SelectedTheme == ThemeMode.Dark ? ThemeMode.Light : ThemeMode.Dark;
+        ThemeMode nextTheme;
+        if (SettingsVM.SelectedTheme == ThemeMode.System)
+        {
+            var isCurrentDark = ApplicationThemeManager.IsMatchedDark();
+            nextTheme = isCurrentDark ? ThemeMode.Light : ThemeMode.Dark;
+        }
+        else
+        {
+            nextTheme = SettingsVM.SelectedTheme == ThemeMode.Dark ? ThemeMode.Light : ThemeMode.Dark;
+        }
         SettingsVM.SelectedTheme = nextTheme;
     }
 }

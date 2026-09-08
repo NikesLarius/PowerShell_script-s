@@ -5,6 +5,7 @@
         xmlns:views="clr-namespace:ScriptHub.Views"
         xmlns:conv="clr-namespace:ScriptHub.Converters"
         Title="Script Hub — Центр управления скриптами"
+        Icon="Resources/app.ico"
         Height="780"
         Width="1200"
         MinHeight="600"
@@ -47,11 +48,11 @@
 
                 <!-- Left: App Icon, Title & Subtitle -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,24,0">
-                    <Border Width="28" Height="28"
+                    <Border Width="30" Height="30"
                             CornerRadius="6"
-                            Background="{DynamicResource AccentFillColorDefaultBrush}"
+                            ClipToBounds="True"
                             Margin="0,0,10,0">
-                        <ui:SymbolIcon Symbol="Flash24" FontSize="16" Foreground="White" />
+                        <Image Source="Resources/app_icon.png" RenderOptions.BitmapScalingMode="HighQuality" />
                     </Border>
                     <StackPanel VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
@@ -63,7 +64,7 @@
                                     Background="{DynamicResource ControlFillColorSecondaryBrush}"
                                     Padding="4,1"
                                     Margin="6,0,0,0">
-                                <TextBlock Text="v1.0" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <TextBlock Text="v1.4" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                             </Border>
                         </StackPanel>
                         <TextBlock Text="Центр управления PowerShell и CMD-скриптами"
