@@ -157,6 +157,13 @@ public class MainViewModel : ViewModelBase
         set => SetProperty(ref _selectedTile, value);
     }
 
+    private bool _isUpdateAvailable;
+    public bool IsUpdateAvailable
+    {
+        get => _isUpdateAvailable;
+        set => SetProperty(ref _isUpdateAvailable, value);
+    }
+
     public int TotalScriptsCount => AllTiles.Count;
     public int FilteredScriptsCount => FilteredTiles.Count;
 
@@ -221,7 +228,11 @@ public class MainViewModel : ViewModelBase
         SetTileSizeCommand = new RelayCommand<TileSize>(size => CurrentTileSize = size);
         DeleteSelectedCommand = new AsyncRelayCommand(DeleteSelectedAsync);
         ToggleThemeCommand = new RelayCommand(ToggleTheme);
-        UpdateFromGitHubCommand = new AsyncRelayCommand(async () => await SettingsVM.UpdateFromGitHubAsync());
+        UpdateFromGitHubCommand = new AsyncRelayCommand(async () =>
+        {
+            await SettingsVM.UpdateFromGitHubAsync();
+            IsUpdateAvailable = false;
+        });
         ToggleTerminalCommand = new RelayCommand(() =>
         {
             if (ConsoleVM.IsOpen)
@@ -243,6 +254,21 @@ public class MainViewModel : ViewModelBase
 
         ReloadCategories();
         await ReloadScriptsAsync();
+
+        _ = CheckForUpdatesInBackgroundAsync();
+    }
+
+    private async Task CheckForUpdatesInBackgroundAsync()
+    {
+        try
+        {
+            var check = await _updateService.CheckForUpdatesAsync();
+            if (check.Success && check.HasUpdates)
+            {
+                IsUpdateAvailable = true;
+            }
+        }
+        catch { }
     }
 
     private void ReloadCategories()

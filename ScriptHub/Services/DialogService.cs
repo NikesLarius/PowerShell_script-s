@@ -13,12 +13,11 @@ public class DialogService : IDialogService
     {
         await Application.Current.Dispatcher.InvokeAsync(() =>
         {
-            System.Windows.MessageBox.Show(
-                Application.Current.MainWindow,
-                message,
-                title,
-                System.Windows.MessageBoxButton.OK,
-                System.Windows.MessageBoxImage.Information);
+            var dlg = new MessageDialog(title, message, MessageDialogType.Information)
+            {
+                Owner = Application.Current.MainWindow
+            };
+            dlg.ShowDialog();
         });
     }
 
@@ -26,12 +25,11 @@ public class DialogService : IDialogService
     {
         await Application.Current.Dispatcher.InvokeAsync(() =>
         {
-            System.Windows.MessageBox.Show(
-                Application.Current.MainWindow,
-                message,
-                title,
-                System.Windows.MessageBoxButton.OK,
-                System.Windows.MessageBoxImage.Error);
+            var dlg = new MessageDialog(title, message, MessageDialogType.Error)
+            {
+                Owner = Application.Current.MainWindow
+            };
+            dlg.ShowDialog();
         });
     }
 
@@ -39,13 +37,12 @@ public class DialogService : IDialogService
     {
         return await Application.Current.Dispatcher.InvokeAsync(() =>
         {
-            var res = System.Windows.MessageBox.Show(
-                Application.Current.MainWindow,
-                message,
-                title,
-                System.Windows.MessageBoxButton.YesNo,
-                System.Windows.MessageBoxImage.Question);
-            return res == System.Windows.MessageBoxResult.Yes;
+            var dlg = new MessageDialog(title, message, MessageDialogType.Question, primaryText, secondaryText)
+            {
+                Owner = Application.Current.MainWindow
+            };
+            var res = dlg.ShowDialog();
+            return res == true && dlg.Confirmed;
         });
     }
 

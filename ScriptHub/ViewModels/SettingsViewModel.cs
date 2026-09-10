@@ -346,7 +346,7 @@ public class SettingsViewModel : ViewModelBase
             {
                 _onDataReloadNeeded();
                 LoadSettings();
-                await _dialogService.ShowMessageAsync("Обновление с GitHub", result.Message + (string.IsNullOrWhiteSpace(result.Details) ? "" : $"\n\n{result.Details}"));
+                await _dialogService.ShowMessageAsync("Обновление с GitHub", result.Message);
             }
             else
             {

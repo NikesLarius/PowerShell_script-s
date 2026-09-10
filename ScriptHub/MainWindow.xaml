@@ -88,16 +88,29 @@
 
                 <!-- Right: Theme Switcher, Settings & System TitleBar -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,8,0">
-                    <!-- GitHub Update Button -->
-                    <ui:Button Appearance="Transparent"
-                               Padding="6"
-                               Margin="0,0,4,0"
-                               Command="{Binding UpdateFromGitHubCommand}"
-                               ToolTip="Обновить программу с GitHub">
-                        <ui:SymbolIcon Symbol="ArrowSync24" FontSize="16" />
-                    </ui:Button>
+                    <!-- GitHub Update Button (with Update Notification Badge) -->
+                    <Grid Margin="0,0,4,0">
+                        <ui:Button Appearance="Transparent"
+                                   Padding="6"
+                                   Command="{Binding UpdateFromGitHubCommand}"
+                                   ToolTip="Обновить программу с GitHub">
+                            <ui:SymbolIcon Symbol="ArrowSync24" FontSize="16" />
+                        </ui:Button>
 
-                    <!-- Terminal Button -->
+                        <!-- Notification indicator when update is available -->
+                        <Border Width="8" Height="8"
+                                CornerRadius="4"
+                                Background="#FF3B30"
+                                BorderBrush="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                BorderThickness="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Margin="0,4,4,0"
+                                IsHitTestVisible="False"
+                                Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BoolToVisConv}}" />
+                    </Grid>
+
+                    <!-- Terminal Button (Header Quick Access) -->
                     <ui:Button Appearance="Transparent"
                                Padding="6"
                                Margin="0,0,4,0"
@@ -149,7 +162,7 @@
                     <Grid.RowDefinitions>
                         <!-- Navigation Items -->
                         <RowDefinition Height="*" />
-                        <!-- Bottom: Add Script Button -->
+                        <!-- Bottom: Action Buttons -->
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
@@ -225,30 +238,9 @@
                             </StackPanel>
                         </RadioButton>
 
-                        <!-- 6. Interactive Terminal Drawer -->
-                        <ui:Button Appearance="Transparent"
-                                   HorizontalAlignment="Stretch"
-                                   Padding="10,8"
-                                   Margin="0,0,0,4"
-                                   Command="{Binding ToggleTerminalCommand}"
-                                   ToolTip="Открыть встроенный интерактивный терминал (Ctrl+` или F12)">
-                            <Grid HorizontalAlignment="Stretch" Width="176">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                    <ui:SymbolIcon Symbol="WindowConsole20" FontSize="16" Foreground="{DynamicResource AccentFillColorDefaultBrush}" Margin="0,0,10,0" />
-                                    <TextBlock Text="Терминал" FontSize="13" VerticalAlignment="Center" />
-                                </StackPanel>
-                                <Border HorizontalAlignment="Right"
-                                        Background="{DynamicResource ControlFillColorSecondaryBrush}"
-                                        CornerRadius="3"
-                                        Padding="4,1">
-                                    <TextBlock Text="Ctrl+`" FontSize="10" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
-                                </Border>
-                            </Grid>
-                        </ui:Button>
-
                         <Separator Margin="6,8,6,8" />
 
-                        <!-- 7. Settings -->
+                        <!-- 6. Settings -->
                         <RadioButton GroupName="NavGroup"
                                      IsChecked="{Binding CurrentNavTag, Converter={StaticResource StringEqualsConv}, ConverterParameter='Settings'}"
                                      Command="{Binding NavigateCommand}"
@@ -261,18 +253,41 @@
                         </RadioButton>
                     </StackPanel>
 
-                    <!-- Bottom: + Add Script Button -->
-                    <ui:Button Grid.Row="1"
-                               Appearance="Primary"
-                               HorizontalAlignment="Stretch"
-                               Padding="12,10"
-                               Command="{Binding ShowAddScriptCommand}"
-                               ToolTip="Создать или импортировать новый скрипт (Ctrl+N)">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <ui:SymbolIcon Symbol="Add24" FontSize="16" Margin="0,0,6,0" />
-                            <TextBlock Text="+ Добавить скрипт" FontWeight="SemiBold" FontSize="13" />
-                        </StackPanel>
-                    </ui:Button>
+                    <!-- Bottom: Action Buttons (+ Add Script & Terminal) -->
+                    <StackPanel Grid.Row="1">
+                        <!-- 1. Add Script Button -->
+                        <ui:Button Appearance="Primary"
+                                   HorizontalAlignment="Stretch"
+                                   Padding="12,10"
+                                   Margin="0,0,0,6"
+                                   Command="{Binding ShowAddScriptCommand}"
+                                   ToolTip="Создать или импортировать новый скрипт (Ctrl+N)">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <ui:SymbolIcon Symbol="Add24" FontSize="16" Margin="0,0,6,0" />
+                                <TextBlock Text="+ Добавить скрипт" FontWeight="SemiBold" FontSize="13" />
+                            </StackPanel>
+                        </ui:Button>
+
+                        <!-- 2. Interactive Terminal Button -->
+                        <ui:Button Appearance="Secondary"
+                                   HorizontalAlignment="Stretch"
+                                   Padding="12,8"
+                                   Command="{Binding ToggleTerminalCommand}"
+                                   ToolTip="Открыть встроенный интерактивный терминал (Ctrl+` или F12)">
+                            <Grid HorizontalAlignment="Stretch" Width="170">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="WindowConsole20" FontSize="15" Foreground="{DynamicResource AccentFillColorDefaultBrush}" Margin="0,0,8,0" />
+                                    <TextBlock Text="Терминал" FontWeight="SemiBold" FontSize="12.5" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <Border HorizontalAlignment="Right"
+                                        Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                                        CornerRadius="3"
+                                        Padding="4,1">
+                                    <TextBlock Text="Ctrl+`" FontSize="10" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                                </Border>
+                            </Grid>
+                        </ui:Button>
+                    </StackPanel>
                 </Grid>
             </Border>
 
