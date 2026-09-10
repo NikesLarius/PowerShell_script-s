@@ -13,9 +13,9 @@
     <Authors>Ларионов Никита</Authors>
     <Copyright>Copyright © 2026 Ларионов Никита (02.09.2026)</Copyright>
     <Product>Script Hub - Windows 11 Script Launcher</Product>
-    <Version>1.4.0</Version>
-    <FileVersion>1.4.0.0</FileVersion>
-    <AssemblyVersion>1.4.0.0</AssemblyVersion>
+    <Version>1.5.0</Version>
+    <FileVersion>1.5.0.0</FileVersion>
+    <AssemblyVersion>1.5.0.0</AssemblyVersion>
     <ApplicationIcon>Resources\app.ico</ApplicationIcon>
   </PropertyGroup>
 

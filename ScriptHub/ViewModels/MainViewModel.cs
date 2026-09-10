@@ -164,6 +164,25 @@ public class MainViewModel : ViewModelBase
         set => SetProperty(ref _isUpdateAvailable, value);
     }
 
+    public string AppVersion
+    {
+        get
+        {
+            var ver = typeof(MainViewModel).Assembly.GetName().Version;
+            return ver != null ? $"v{ver.Major}.{ver.Minor}" : "v1.5";
+        }
+    }
+
+    public string AppFullVersion
+    {
+        get
+        {
+            var ver = typeof(MainViewModel).Assembly.GetName().Version;
+            var verStr = ver != null ? $"{ver.Major}.{ver.Minor}.{ver.Build}" : "1.5.0";
+            return $"Версия {verStr} · .NET 8 · WPF + Wpf.Ui · AvalonEdit";
+        }
+    }
+
     public int TotalScriptsCount => AllTiles.Count;
     public int FilteredScriptsCount => FilteredTiles.Count;
 

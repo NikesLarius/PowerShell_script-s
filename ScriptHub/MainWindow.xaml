@@ -64,7 +64,7 @@
                                     Background="{DynamicResource ControlFillColorSecondaryBrush}"
                                     Padding="4,1"
                                     Margin="6,0,0,0">
-                                <TextBlock Text="v1.4" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <TextBlock Text="{Binding AppVersion}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                             </Border>
                         </StackPanel>
                         <TextBlock Text="Центр управления PowerShell и CMD-скриптами"
@@ -93,7 +93,7 @@
                         <ui:Button Appearance="Transparent"
                                    Padding="6"
                                    Command="{Binding UpdateFromGitHubCommand}"
-                                   ToolTip="Обновить программу с GitHub">
+                                   ToolTip="Проверить и установить обновления">
                             <ui:SymbolIcon Symbol="ArrowSync24" FontSize="16" />
                         </ui:Button>
 

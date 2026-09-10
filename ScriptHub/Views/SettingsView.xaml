@@ -357,8 +357,8 @@
                     </StackPanel>
                 </Border>
 
-                <!-- 5. GITHUB UPDATES -->
-                <TextBlock Text="Обновление с GitHub" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+                <!-- 5. UPDATES -->
+                <TextBlock Text="Обновление программы" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
 
                 <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
@@ -374,7 +374,7 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="Синхронизация и обновление программы" FontSize="14" FontWeight="SemiBold" />
-                                <TextBlock Text="Проверка актуальных скриптов и обновлений из репозитория GitHub (NikesLarius/PowerShell_script-s)"
+                                <TextBlock Text="Проверка актуальных скриптов и компонентов программы"
                                            FontSize="12"
                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                            TextWrapping="Wrap" />
@@ -384,7 +384,7 @@
                                     Background="{DynamicResource ControlFillColorSecondaryBrush}"
                                     Padding="8,4"
                                     VerticalAlignment="Top">
-                                <TextBlock Text="GitHub: main" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <TextBlock Text="Ветка: main" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                             </Border>
                         </Grid>
 
@@ -394,7 +394,7 @@
                                        Command="{Binding UpdateFromGitHubCommand}">
                                 <StackPanel Orientation="Horizontal">
                                     <ui:SymbolIcon Symbol="ArrowSync24" FontSize="16" Margin="0,0,6,0" />
-                                    <TextBlock Text="Обновить с GitHub" />
+                                    <TextBlock Text="Проверить обновления" />
                                 </StackPanel>
                             </ui:Button>
 
@@ -442,7 +442,7 @@
 
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                             <TextBlock Text="Script Hub — Windows 11 Script Launcher" FontSize="15" FontWeight="Bold" />
-                            <TextBlock Text="Версия 1.4.0 · .NET 8 · WPF + Wpf.Ui · AvalonEdit"
+                            <TextBlock Text="{Binding AppFullVersion}"
                                        FontSize="12"
                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                        Margin="0,2,0,0" />

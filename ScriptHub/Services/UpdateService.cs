@@ -47,6 +47,22 @@ public class UpdateService : IUpdateService
         catch { }
     }
 
+    private async Task<string> GetCurrentCommitSummaryAsync()
+    {
+        try
+        {
+            var isGitRepo = Directory.Exists(Path.Combine(_storageService.RootDirectory, ".git"));
+            if (!isGitRepo) return "";
+
+            var res = await RunCommandAsync("git", "log -1 --format=\"%h (%cd): %s\" --date=short", _storageService.RootDirectory);
+            return res.ExitCode == 0 ? res.Output.Trim() : "";
+        }
+        catch
+        {
+            return "";
+        }
+    }
+
     public async Task<UpdateResult> CheckForUpdatesAsync()
     {
         var isGitRepo = Directory.Exists(Path.Combine(_storageService.RootDirectory, ".git"));
@@ -56,17 +72,20 @@ public class UpdateService : IUpdateService
             var fetchResult = await RunCommandAsync("git", "fetch origin main", _storageService.RootDirectory);
             if (fetchResult.ExitCode == 0)
             {
-                var diffResult = await RunCommandAsync("git", "log HEAD..origin/main --oneline", _storageService.RootDirectory);
+                var diffResult = await RunCommandAsync("git", "log HEAD..origin/main --format=\"• %h: %s\" -n 10", _storageService.RootDirectory);
                 if (diffResult.ExitCode == 0)
                 {
                     var commits = diffResult.Output.Trim();
+                    var curCommit = await GetCurrentCommitSummaryAsync();
+
                     if (string.IsNullOrWhiteSpace(commits))
                     {
                         return new UpdateResult
                         {
                             Success = true,
                             HasUpdates = false,
-                            Message = "У вас установлена самая актуальная версия из ветки main."
+                            Message = "Установлена актуальная версия. Обновлений нет.",
+                            Details = !string.IsNullOrWhiteSpace(curCommit) ? $"Текущая версия:\n• {curCommit}" : ""
                         };
                     }
                     else
@@ -75,8 +94,8 @@ public class UpdateService : IUpdateService
                         {
                             Success = true,
                             HasUpdates = true,
-                            Message = "Доступны свежие обновления на GitHub!",
-                            Details = $"Новые коммиты:\n{commits}"
+                            Message = "Доступно новое обновление!",
+                            Details = $"Доступные изменения:\n{commits}" + (!string.IsNullOrWhiteSpace(curCommit) ? $"\n\nТекущая версия:\n• {curCommit}" : "")
                         };
                     }
                 }
@@ -98,12 +117,13 @@ public class UpdateService : IUpdateService
                     ? msgProp.GetString()
                     : "";
 
+                var curCommit = await GetCurrentCommitSummaryAsync();
                 return new UpdateResult
                 {
                     Success = true,
                     HasUpdates = true,
-                    Message = "Связь с GitHub установлена. Доступна актуальная версия ветки main.",
-                    Details = $"Последний коммит ({sha}): {commitMessage}"
+                    Message = "Доступно новое обновление!",
+                    Details = $"Последнее изменение ({sha}):\n• {commitMessage}" + (!string.IsNullOrWhiteSpace(curCommit) ? $"\n\nТекущая версия:\n• {curCommit}" : "")
                 };
             }
             else
@@ -111,7 +131,7 @@ public class UpdateService : IUpdateService
                 return new UpdateResult
                 {
                     Success = false,
-                    Message = $"GitHub вернул статус {(int)response.StatusCode}: {response.ReasonPhrase}"
+                    Message = $"Сервер обновлений вернул статус {(int)response.StatusCode}: {response.ReasonPhrase}"
                 };
             }
         }
@@ -131,7 +151,12 @@ public class UpdateService : IUpdateService
 
         if (isGitRepo)
         {
-            progress?.Report("Синхронизация через Git...");
+            progress?.Report("Проверка доступных обновлений...");
+            await RunCommandAsync("git", "fetch origin main", _storageService.RootDirectory);
+            var diffResult = await RunCommandAsync("git", "log HEAD..origin/main --format=\"• %h: %s\" -n 10", _storageService.RootDirectory);
+            var incomingCommits = diffResult.ExitCode == 0 ? diffResult.Output.Trim() : "";
+
+            progress?.Report("Синхронизация файлов программы...");
             var pullResult = await RunCommandAsync("git", "pull origin main", _storageService.RootDirectory);
 
             if (pullResult.ExitCode == 0)
@@ -142,27 +167,39 @@ public class UpdateService : IUpdateService
 
                 // Reload scripts and categories in memory
                 await _scriptService.InitializeAsync();
+                var curCommit = await GetCurrentCommitSummaryAsync();
 
-                return new UpdateResult
+                if (!alreadyUpToDate && !string.IsNullOrWhiteSpace(incomingCommits))
                 {
-                    Success = true,
-                    HasUpdates = !alreadyUpToDate,
-                    Message = alreadyUpToDate
-                        ? "Программа и скрипты уже обновлены до последней версии с GitHub."
-                        : "Обновление успешно выполнено! Файлы и скрипты синхронизированы с GitHub.",
-                    Details = output
-                };
+                    return new UpdateResult
+                    {
+                        Success = true,
+                        HasUpdates = true,
+                        Message = "Программа и скрипты успешно обновлены!",
+                        Details = $"Установленные изменения:\n{incomingCommits}" + (!string.IsNullOrWhiteSpace(curCommit) ? $"\n\nТекущая версия:\n• {curCommit}" : "")
+                    };
+                }
+                else
+                {
+                    return new UpdateResult
+                    {
+                        Success = true,
+                        HasUpdates = false,
+                        Message = "Установлена актуальная версия. Обновлений нет.",
+                        Details = !string.IsNullOrWhiteSpace(curCommit) ? $"Текущая версия:\n• {curCommit}" : ""
+                    };
+                }
             }
             else
             {
-                progress?.Report("Git pull вернул предупреждение. Пробуем загрузку архива...");
+                progress?.Report("Предупреждение синхронизации. Пробуем загрузку архива...");
             }
         }
 
         // Fallback: download zip archive from GitHub
         try
         {
-            progress?.Report("Загрузка архива репозитория с GitHub...");
+            progress?.Report("Загрузка архива обновлений...");
             var zipBytes = await _httpClient.GetByteArrayAsync(GitHubZipArchiveUrl);
 
             progress?.Report("Распаковка и обновление скриптов...");
@@ -174,18 +211,15 @@ public class UpdateService : IUpdateService
                 await File.WriteAllBytesAsync(tempZip, zipBytes);
                 ZipFile.ExtractToDirectory(tempZip, tempExtract);
 
-                // The root folder in zip is usually PowerShell_script-s-main
                 var extractedDirs = Directory.GetDirectories(tempExtract);
                 var sourceRootDir = extractedDirs.Length > 0 ? extractedDirs[0] : tempExtract;
 
-                // Sync Scripts folder
                 var sourceScriptsDir = Path.Combine(sourceRootDir, "Scripts");
                 if (Directory.Exists(sourceScriptsDir))
                 {
                     CopyDirectory(sourceScriptsDir, _storageService.ScriptsDirectory, overwrite: true);
                 }
 
-                // Sync Data folder if default files needed
                 var sourceDataDir = Path.Combine(sourceRootDir, "Data");
                 if (Directory.Exists(sourceDataDir))
                 {
@@ -197,14 +231,15 @@ public class UpdateService : IUpdateService
                     }
                 }
 
-                // Reload scripts and categories
                 await _scriptService.InitializeAsync();
+                var curCommit = await GetCurrentCommitSummaryAsync();
 
                 return new UpdateResult
                 {
                     Success = true,
                     HasUpdates = true,
-                    Message = "Скрипты и компоненты успешно обновлены с GitHub (ветка main)!"
+                    Message = "Скрипты и компоненты успешно обновлены!",
+                    Details = !string.IsNullOrWhiteSpace(curCommit) ? $"Текущая версия:\n• {curCommit}" : ""
                 };
             }
             finally
@@ -218,7 +253,7 @@ public class UpdateService : IUpdateService
             return new UpdateResult
             {
                 Success = false,
-                Message = $"Ошибка при обновлении с GitHub: {ex.Message}"
+                Message = $"Ошибка загрузки обновлений: {ex.Message}"
             };
         }
     }

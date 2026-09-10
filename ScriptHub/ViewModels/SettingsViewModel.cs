@@ -330,11 +330,21 @@ public class SettingsViewModel : ViewModelBase
         }
     }
 
+    public string AppFullVersion
+    {
+        get
+        {
+            var ver = typeof(SettingsViewModel).Assembly.GetName().Version;
+            var verStr = ver != null ? $"{ver.Major}.{ver.Minor}.{ver.Build}" : "1.5.0";
+            return $"Версия {verStr} · .NET 8 · WPF + Wpf.Ui · AvalonEdit";
+        }
+    }
+
     public async Task UpdateFromGitHubAsync()
     {
         if (IsUpdating) return;
         IsUpdating = true;
-        UpdateStatusMessage = "Проверка и загрузка обновлений с GitHub...";
+        UpdateStatusMessage = "Проверка и загрузка обновлений...";
 
         try
         {
@@ -346,7 +356,12 @@ public class SettingsViewModel : ViewModelBase
             {
                 _onDataReloadNeeded();
                 LoadSettings();
-                await _dialogService.ShowMessageAsync("Обновление с GitHub", result.Message);
+                var msg = result.Message;
+                if (!string.IsNullOrWhiteSpace(result.Details))
+                {
+                    msg += "\n\n" + result.Details;
+                }
+                await _dialogService.ShowMessageAsync("Обновление программы", msg);
             }
             else
             {
