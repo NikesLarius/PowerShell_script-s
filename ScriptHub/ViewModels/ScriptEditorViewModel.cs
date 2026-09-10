@@ -333,14 +333,9 @@ public class ScriptEditorViewModel : ViewModelBase
 
         ValidationError = "";
 
-        if (string.IsNullOrWhiteSpace(FilePath))
-        {
-            FilePath = _scriptService.CreateNewScriptFile(Title, ScriptType, CodeContent);
-        }
-        else
-        {
-            await _scriptService.SaveScriptContentAsync(FilePath, CodeContent);
-        }
+        // Enforce saving and duplicating strictly into the \Scripts folder
+        var savedPath = await _scriptService.EnsureScriptInScriptsFolderAsync(FilePath, Title, ScriptType, CodeContent);
+        FilePath = savedPath;
 
         _editingScript.Title = Title.Trim();
         _editingScript.Description = Description?.Trim() ?? "";
@@ -355,7 +350,7 @@ public class ScriptEditorViewModel : ViewModelBase
         _editingScript.CustomWorkingDirectory = CustomWorkingDirectory?.Trim() ?? "";
         _editingScript.Arguments = Arguments?.Trim() ?? "";
 
-        await _scriptService.SaveScriptAsync(_editingScript);
+        await _scriptService.SaveScriptAsync(_editingScript, CodeContent);
 
         _onSaveCompleted(_editingScript, thenRun);
     }

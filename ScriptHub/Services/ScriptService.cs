@@ -32,6 +32,26 @@ public class ScriptService : IScriptService
         _scripts.Clear();
         _scripts.AddRange(await _storageService.LoadScriptsAsync());
 
+        // Ensure all scripts are placed in Scripts folder
+        bool modified = false;
+        foreach (var s in _scripts)
+        {
+            if (!string.IsNullOrWhiteSpace(s.FilePath) && !_storageService.IsPathInsideScriptsDirectory(s.FilePath) && File.Exists(s.FilePath))
+            {
+                try
+                {
+                    var content = await _storageService.ReadFileTextAsync(s.FilePath);
+                    s.FilePath = _storageService.EnsureScriptInScriptsDirectory(s.FilePath, s.Title, s.ScriptType, content);
+                    modified = true;
+                }
+                catch { }
+            }
+        }
+        if (modified)
+        {
+            await _storageService.SaveScriptsAsync(_scripts);
+        }
+
         _categories.Clear();
         _categories.AddRange(await _storageService.LoadCategoriesAsync());
 
@@ -40,9 +60,21 @@ public class ScriptService : IScriptService
 
     public async Task SaveScriptAsync(ScriptModel script, string? codeContent = null)
     {
-        if (codeContent != null && !string.IsNullOrWhiteSpace(script.FilePath))
+        if (codeContent != null)
         {
-            await _storageService.WriteFileTextAsync(script.FilePath, codeContent);
+            if (string.IsNullOrWhiteSpace(script.FilePath) || !_storageService.IsPathInsideScriptsDirectory(script.FilePath))
+            {
+                script.FilePath = _storageService.EnsureScriptInScriptsDirectory(script.FilePath, script.Title, script.ScriptType, codeContent);
+            }
+            else
+            {
+                await _storageService.WriteFileTextAsync(script.FilePath, codeContent);
+            }
+        }
+        else if (!string.IsNullOrWhiteSpace(script.FilePath) && !_storageService.IsPathInsideScriptsDirectory(script.FilePath) && File.Exists(script.FilePath))
+        {
+            var content = await _storageService.ReadFileTextAsync(script.FilePath);
+            script.FilePath = _storageService.EnsureScriptInScriptsDirectory(script.FilePath, script.Title, script.ScriptType, content);
         }
 
         var existingIndex = _scripts.FindIndex(s => s.Id == script.Id);
@@ -118,6 +150,14 @@ public class ScriptService : IScriptService
     }
 
     public bool CheckFileExists(string filePath) => _storageService.FileExists(filePath);
+
+    public bool IsInsideScriptsFolder(string filePath) => _storageService.IsPathInsideScriptsDirectory(filePath);
+
+    public Task<string> EnsureScriptInScriptsFolderAsync(string? existingPath, string title, ScriptType scriptType, string content)
+    {
+        var resultPath = _storageService.EnsureScriptInScriptsDirectory(existingPath, title, scriptType, content);
+        return Task.FromResult(resultPath);
+    }
 
     public string CreateNewScriptFile(string title, ScriptType scriptType, string content)
     {

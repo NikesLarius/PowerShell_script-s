@@ -11,6 +11,7 @@ public interface IScriptService
     IReadOnlyList<CategoryModel> GetAllCategories();
     AppConfigModel GetConfig();
     
+    Task InitializeAsync();
     Task SaveScriptAsync(ScriptModel script, string? codeContent = null);
     Task DeleteScriptAsync(string scriptId, bool deleteFileFromDisk);
     Task<string> LoadScriptContentAsync(string filePath);
@@ -22,5 +23,7 @@ public interface IScriptService
     Task DeleteCategoryAsync(string categoryId);
     
     bool CheckFileExists(string filePath);
+    bool IsInsideScriptsFolder(string filePath);
     string CreateNewScriptFile(string title, ScriptType scriptType, string content);
+    Task<string> EnsureScriptInScriptsFolderAsync(string? existingPath, string title, ScriptType scriptType, string content);
 }

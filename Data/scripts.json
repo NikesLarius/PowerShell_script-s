@@ -17,9 +17,9 @@
     "CustomInterpreterPath": "",
     "OrderIndex": 0,
     "CreatedAt": "2026-09-02T09:28:25.5491581Z",
-    "LastRunAt": "2026-09-08T09:23:00.7528845Z",
+    "LastRunAt": "2026-09-10T03:48:59.8706695Z",
     "LastExitCode": 0,
-    "LastDuration": "00:00:00.9229179",
+    "LastDuration": "00:00:00.5719341",
     "LastStatus": 2
   },
   {
@@ -40,9 +40,9 @@
     "CustomInterpreterPath": "",
     "OrderIndex": 2,
     "CreatedAt": "2026-09-02T10:15:07.036669Z",
-    "LastRunAt": "2026-09-08T09:22:38.5847562Z",
+    "LastRunAt": "2026-09-10T04:37:58.2534267Z",
     "LastExitCode": 0,
-    "LastDuration": "00:00:10.5961512",
+    "LastDuration": "00:00:03.5611056",
     "LastStatus": 2
   },
   {
@@ -141,9 +141,9 @@
     "Id": "a0cf5d1e-16ef-4a76-8acb-48c623e31163",
     "Title": "Поиск и умная очистка дубликатов файлов",
     "Description": "Скрипт выполняет автоматический поиск 100% идентичных файлов (по размеру и SHA256-хэшу) в рабочей папке и подкаталогах, безопасно перемещая лишние копии в Корзину.\n\nПринцип выбора оригинала:\n\nПриоритет чистого имени: Всегда сохраняется файл без суффиксов в названии (файл.ext вместо файл (2).ext).\n\nМинимальный индекс копии: При наличии нескольких пронумерованных копий выбирается файл с наименьшим номером ((1) вместо (4)).\n\nСвежесть изменений: При одинаковом формате имен приоритет отдается файлу с более поздней датой сохранения автором.\n\nБезопасность: Игнорирует скрытые и системные файлы; удаление выполняется в Корзину Windows, исключая безвозвратную потерю данных.",
-    "FilePath": "C:\\Users\\nlarionov\\Downloads\\Telegram Desktop\\Поиск дублей.ps1",
+    "FilePath": "C:\\Users\\nlarionov\\Desktop\\Проекты\\Приложение для скриптов PS\\Scripts\\PowerShell\\Поиск дублей.ps1",
     "ScriptType": 0,
-    "CategoryId": "cat-cleanup",
+    "CategoryId": "cat-files",
     "Icon": "DocumentCode24",
     "AccentColor": "#0078D4",
     "TileSize": 2,
@@ -178,9 +178,9 @@
     "CustomInterpreterPath": "",
     "OrderIndex": 9,
     "CreatedAt": "2026-09-02T16:51:04.556201Z",
-    "LastRunAt": "2026-09-08T09:23:38.7298983Z",
+    "LastRunAt": "2026-09-09T11:28:06.8860015Z",
     "LastExitCode": 0,
-    "LastDuration": "00:00:13.0338469",
+    "LastDuration": "00:05:49.6600920",
     "LastStatus": 2
   },
   {
@@ -224,9 +224,9 @@
     "CustomInterpreterPath": "",
     "OrderIndex": 11,
     "CreatedAt": "2026-09-03T05:04:28.5203826Z",
-    "LastRunAt": "2026-09-08T09:25:44.4937635Z",
+    "LastRunAt": "2026-09-09T11:14:32.2983948Z",
     "LastExitCode": 0,
-    "LastDuration": "00:00:20.0160356",
+    "LastDuration": "00:00:04.4551422",
     "LastStatus": 2
   }
 ]

@@ -63,6 +63,7 @@ public partial class App : Application
 
             var config = scriptService.GetConfig();
             mainWindow.ApplyTheme(config.Theme);
+            mainWindow.ApplyOpacity(config.WindowOpacity);
 
             app.Run(mainWindow);
         }
@@ -89,6 +90,7 @@ public partial class App : Application
         services.AddSingleton<IHistoryService, HistoryService>();
         services.AddSingleton<IBackupService, BackupService>();
         services.AddSingleton<IDialogService, DialogService>();
+        services.AddSingleton<IUpdateService, UpdateService>();
 
         // ViewModels
         services.AddSingleton<MainViewModel>(sp =>
@@ -98,6 +100,7 @@ public partial class App : Application
             var historyService = sp.GetRequiredService<IHistoryService>();
             var dialogService = sp.GetRequiredService<IDialogService>();
             var backupService = sp.GetRequiredService<IBackupService>();
+            var updateService = sp.GetRequiredService<IUpdateService>();
 
             return new MainViewModel(
                 scriptService,
@@ -105,11 +108,19 @@ public partial class App : Application
                 historyService,
                 dialogService,
                 backupService,
+                updateService,
                 themeMode =>
                 {
                     if (Current?.MainWindow is MainWindow mw)
                     {
                         mw.ApplyTheme(themeMode);
+                    }
+                },
+                opacity =>
+                {
+                    if (Current?.MainWindow is MainWindow mw)
+                    {
+                        mw.ApplyOpacity(opacity);
                     }
                 });
         });

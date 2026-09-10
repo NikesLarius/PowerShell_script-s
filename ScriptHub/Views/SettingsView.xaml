@@ -71,8 +71,46 @@
 
                         <Separator Margin="0,4,0,14" />
 
-                        <!-- Default Tile Size -->
+                        <!-- Window Opacity Slider -->
                         <Grid Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="220" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Прозрачность приложения" FontSize="14" FontWeight="SemiBold" />
+                                <TextBlock Text="Настройте уровень прозрачности окна программы (от 20% до 100%)"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            </StackPanel>
+                            <Grid Grid.Column="1" VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="46" />
+                                </Grid.ColumnDefinitions>
+                                <Slider Grid.Column="0"
+                                        Minimum="0.20"
+                                        Maximum="1.00"
+                                        SmallChange="0.05"
+                                        LargeChange="0.10"
+                                        TickFrequency="0.05"
+                                        IsSnapToTickEnabled="False"
+                                        Value="{Binding WindowOpacity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,10,0" />
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding WindowOpacityPercent, StringFormat='{}{0}%'}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Right" />
+                            </Grid>
+                        </Grid>
+
+                        <Separator Margin="0,4,0,14" />
+
+                        <!-- Default Tile Size -->
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -319,7 +357,67 @@
                     </StackPanel>
                 </Border>
 
-                <!-- 5. ABOUT APP -->
+                <!-- 5. GITHUB UPDATES -->
+                <TextBlock Text="Обновление с GitHub" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="18"
+                        Margin="0,0,0,20">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Синхронизация и обновление программы" FontSize="14" FontWeight="SemiBold" />
+                                <TextBlock Text="Проверка актуальных скриптов и обновлений из репозитория GitHub (NikesLarius/PowerShell_script-s)"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Border Grid.Column="1"
+                                    CornerRadius="4"
+                                    Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                                    Padding="8,4"
+                                    VerticalAlignment="Top">
+                                <TextBlock Text="GitHub: main" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            </Border>
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,10">
+                            <ui:Button Appearance="Primary"
+                                       Margin="0,0,10,0"
+                                       Command="{Binding UpdateFromGitHubCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="ArrowSync24" FontSize="16" Margin="0,0,6,0" />
+                                    <TextBlock Text="Обновить с GitHub" />
+                                </StackPanel>
+                            </ui:Button>
+
+                            <ui:Button Appearance="Secondary"
+                                       Command="{Binding OpenGitHubRepoCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:SymbolIcon Symbol="Globe24" FontSize="16" Margin="0,0,6,0" />
+                                    <TextBlock Text="Открыть репозиторий" />
+                                </StackPanel>
+                            </ui:Button>
+                        </StackPanel>
+
+                        <!-- Status text -->
+                        <TextBlock Text="{Binding UpdateStatusMessage}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                                   Visibility="{Binding UpdateStatusMessage, Converter={StaticResource NullOrEmptyToVisConv}}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 6. ABOUT APP -->
                 <TextBlock Text="О приложении" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12" />
 
                 <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"

@@ -13,4 +13,5 @@ public class AppConfigModel
     public bool ClearConsoleOnStart { get; set; } = true;
     public string DefaultWorkingDirectory { get; set; } = string.Empty;
     public int MaxHistoryEntries { get; set; } = 100;
+    public double WindowOpacity { get; set; } = 1.0;
 }

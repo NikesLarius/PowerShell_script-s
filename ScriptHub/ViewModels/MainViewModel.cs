@@ -28,7 +28,9 @@ public class MainViewModel : ViewModelBase
     private readonly IHistoryService _historyService;
     private readonly IDialogService _dialogService;
     private readonly IBackupService _backupService;
+    private readonly IUpdateService _updateService;
     private readonly Action<ThemeMode> _onThemeChanged;
+    private readonly Action<double> _onOpacityChanged;
 
     private ActiveViewType _activeView = ActiveViewType.Tiles;
     private string _currentNavTag = "All";
@@ -167,6 +169,7 @@ public class MainViewModel : ViewModelBase
     public ICommand SetTileSizeCommand { get; }
     public ICommand DeleteSelectedCommand { get; }
     public ICommand ToggleThemeCommand { get; }
+    public ICommand UpdateFromGitHubCommand { get; }
 
     public MainViewModel(
         IScriptService scriptService,
@@ -174,18 +177,29 @@ public class MainViewModel : ViewModelBase
         IHistoryService historyService,
         IDialogService dialogService,
         IBackupService backupService,
-        Action<ThemeMode> onThemeChanged)
+        IUpdateService updateService,
+        Action<ThemeMode> onThemeChanged,
+        Action<double> onOpacityChanged)
     {
         _scriptService = scriptService;
         _processService = processService;
         _historyService = historyService;
         _dialogService = dialogService;
         _backupService = backupService;
+        _updateService = updateService;
         _onThemeChanged = onThemeChanged;
+        _onOpacityChanged = onOpacityChanged;
 
         ConsoleVM = new ExecutionConsoleViewModel(_processService);
         HistoryVM = new HistoryViewModel(_historyService, _dialogService, RerunScriptById);
-        SettingsVM = new SettingsViewModel(_scriptService, _backupService, _dialogService, _onThemeChanged, () => _ = InitializeAsync());
+        SettingsVM = new SettingsViewModel(
+            _scriptService, 
+            _backupService, 
+            _dialogService, 
+            _updateService, 
+            _onThemeChanged, 
+            _onOpacityChanged, 
+            () => _ = InitializeAsync());
         
         EditorVM = new ScriptEditorViewModel(
             _scriptService, 
@@ -206,6 +220,7 @@ public class MainViewModel : ViewModelBase
         SetTileSizeCommand = new RelayCommand<TileSize>(size => CurrentTileSize = size);
         DeleteSelectedCommand = new AsyncRelayCommand(DeleteSelectedAsync);
         ToggleThemeCommand = new RelayCommand(ToggleTheme);
+        UpdateFromGitHubCommand = new AsyncRelayCommand(async () => await SettingsVM.UpdateFromGitHubAsync());
     }
 
     public async Task InitializeAsync()

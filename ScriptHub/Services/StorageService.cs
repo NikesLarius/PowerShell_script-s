@@ -39,10 +39,8 @@ public class StorageService : IStorageService
 
     private static string ResolveProjectRootDirectory()
     {
-        var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-
-        // 1. Search up the directory tree for ScriptHub.sln (Project Workspace Root)
-        var dir = new DirectoryInfo(baseDir);
+        // 1. Search up the directory tree from BaseDirectory for ScriptHub.sln (Project Workspace Root)
+        var dir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
         while (dir != null)
         {
             if (File.Exists(Path.Combine(dir.FullName, "ScriptHub.sln")))
@@ -52,9 +50,19 @@ public class StorageService : IStorageService
             dir = dir.Parent;
         }
 
-        // 2. If running standalone from publish/ or any portable folder:
-        // Use the folder of the executable
-        return baseDir;
+        // 2. Search up from CurrentDirectory for ScriptHub.sln
+        var curDir = new DirectoryInfo(Environment.CurrentDirectory);
+        while (curDir != null)
+        {
+            if (File.Exists(Path.Combine(curDir.FullName, "ScriptHub.sln")))
+            {
+                return curDir.FullName;
+            }
+            curDir = curDir.Parent;
+        }
+
+        // 3. Fallback to BaseDirectory
+        return AppDomain.CurrentDomain.BaseDirectory;
     }
 
     public async Task InitializeAsync()
@@ -272,4 +280,77 @@ Get-ChildItem -File | ForEach-Object {
     }
 
     public bool FileExists(string path) => !string.IsNullOrWhiteSpace(path) && File.Exists(path);
+
+    public bool IsPathInsideScriptsDirectory(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return false;
+        try
+        {
+            var fullPath = Path.GetFullPath(path).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            var scriptsFullPath = Path.GetFullPath(ScriptsDirectory).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            return fullPath.StartsWith(scriptsFullPath, StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public string EnsureScriptInScriptsDirectory(string? existingPath, string title, ScriptType scriptType, string content)
+    {
+        var targetFolder = scriptType == ScriptType.PowerShell
+            ? PowerShellScriptsDirectory
+            : CmdScriptsDirectory;
+
+        Directory.CreateDirectory(targetFolder);
+
+        // If path is already inside \Scripts, overwrite and return it
+        if (!string.IsNullOrWhiteSpace(existingPath) && IsPathInsideScriptsDirectory(existingPath))
+        {
+            var targetDir = Path.GetDirectoryName(existingPath);
+            if (!string.IsNullOrEmpty(targetDir)) Directory.CreateDirectory(targetDir);
+            EncodingHelper.WriteTextUtf8Bom(existingPath, content);
+            return existingPath;
+        }
+
+        // Otherwise, duplicate/create into \Scripts
+        var ext = scriptType switch
+        {
+            ScriptType.PowerShell => ".ps1",
+            ScriptType.Batch => ".bat",
+            ScriptType.Cmd => ".cmd",
+            _ => ".ps1"
+        };
+
+        string baseName;
+        if (!string.IsNullOrWhiteSpace(existingPath))
+        {
+            var nameFromPath = Path.GetFileNameWithoutExtension(existingPath);
+            var extFromPath = Path.GetExtension(existingPath);
+            if (!string.IsNullOrWhiteSpace(extFromPath) && (extFromPath.Equals(".ps1", StringComparison.OrdinalIgnoreCase) || extFromPath.Equals(".bat", StringComparison.OrdinalIgnoreCase) || extFromPath.Equals(".cmd", StringComparison.OrdinalIgnoreCase)))
+            {
+                ext = extFromPath.ToLowerInvariant();
+            }
+            baseName = string.Join("_", nameFromPath.Split(Path.GetInvalidFileNameChars()));
+        }
+        else
+        {
+            baseName = string.Join("_", title.Split(Path.GetInvalidFileNameChars()));
+        }
+
+        if (string.IsNullOrWhiteSpace(baseName))
+        {
+            baseName = "Script_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        }
+
+        var fullPath = Path.Combine(targetFolder, baseName + ext);
+        int counter = 1;
+        while (File.Exists(fullPath))
+        {
+            fullPath = Path.Combine(targetFolder, $"{baseName}_{counter++}{ext}");
+        }
+
+        EncodingHelper.WriteTextUtf8Bom(fullPath, content);
+        return fullPath;
+    }
 }

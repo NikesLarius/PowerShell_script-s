@@ -29,4 +29,6 @@ public interface IStorageService
     Task WriteFileTextAsync(string path, string content);
     void DeleteFile(string path);
     bool FileExists(string path);
+    bool IsPathInsideScriptsDirectory(string path);
+    string EnsureScriptInScriptsDirectory(string? existingPath, string title, ScriptType scriptType, string content);
 }
