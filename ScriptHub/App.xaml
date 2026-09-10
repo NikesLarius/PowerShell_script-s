@@ -55,13 +55,13 @@
             <!-- Category Filter Pill RadioButton Style -->
             <Style x:Key="CategoryPillRadioButtonStyle" TargetType="RadioButton">
                 <Setter Property="Cursor" Value="Hand" />
-                <Setter Property="Padding" Value="14,6" />
-                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Padding" Value="10,3" />
+                <Setter Property="FontSize" Value="11.5" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="RadioButton">
                             <Border x:Name="PillBorder"
-                                    CornerRadius="14"
+                                    CornerRadius="10"
                                     Background="{DynamicResource ControlFillColorDefaultBrush}"
                                     BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
                                     BorderThickness="1"
