@@ -206,33 +206,8 @@ catch {{
                 proc.Start();
                 AppendOutput("> Процесс запущен с правами администратора.", false);
 
-                // Read logs in real-time
-                using (var fileStream = new FileStream(tempLogFile, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite))
-                using (var reader = new StreamReader(fileStream, Encoding.UTF8))
-                {
-                    while (!proc.HasExited)
-                    {
-                        while (reader.ReadLine() is { } line)
-                        {
-                            var isErr = line.Contains("error", StringComparison.OrdinalIgnoreCase) || 
-                                        line.Contains("ошибка", StringComparison.OrdinalIgnoreCase) ||
-                                        line.StartsWith("Exception:", StringComparison.OrdinalIgnoreCase) ||
-                                        line.StartsWith("ПРЕДУПРЕЖДЕНИЕ:", StringComparison.OrdinalIgnoreCase);
-                            AppendOutput(line, isErr);
-                        }
-                        await Task.Delay(150, cancellationToken);
-                    }
-
-                    // Remaining lines
-                    while (reader.ReadLine() is { } line)
-                    {
-                        var isErr = line.Contains("error", StringComparison.OrdinalIgnoreCase) || 
-                                    line.Contains("ошибка", StringComparison.OrdinalIgnoreCase) ||
-                                    line.StartsWith("Exception:", StringComparison.OrdinalIgnoreCase) ||
-                                    line.StartsWith("ПРЕДУПРЕЖДЕНИЕ:", StringComparison.OrdinalIgnoreCase);
-                        AppendOutput(line, isErr);
-                    }
-                }
+                // Read logs in real-time with dynamic encoding detection
+                await EncodingHelper.StreamLogFileAsync(tempLogFile, proc, AppendOutput, cancellationToken);
 
                 stopwatch.Stop();
                 result.EndTime = DateTime.UtcNow;
@@ -257,15 +232,15 @@ catch {{
                 psi.RedirectStandardOutput = true;
                 psi.RedirectStandardError = true;
                 psi.CreateNoWindow = true;
-                psi.StandardOutputEncoding = Encoding.UTF8;
-                psi.StandardErrorEncoding = Encoding.UTF8;
 
                 if (script.ScriptType == ScriptType.PowerShell)
                 {
                     tempRunnerFile = Path.Combine(Path.GetTempPath(), $"scripthub_runner_{Guid.NewGuid():N}.ps1");
 
                     var runnerCode = $@"
+$ProgressPreference = 'SilentlyContinue'
 [Console]::InputEncoding = [Console]::OutputEncoding = $OutputEncoding = [System.Text.Encoding]::UTF8
+chcp 65001 >$null 2>&1
 Set-Location -LiteralPath '{escapedWorkDir}'
 [System.IO.Directory]::SetCurrentDirectory('{escapedWorkDir}')
 $PSScriptRoot = '{escapedWorkDir}'
@@ -282,7 +257,7 @@ $PSCommandPath = '{escapedScriptPath}'
                 else // Batch / CMD / Other
                 {
                     psi.FileName = "cmd.exe";
-                    psi.Arguments = $"/c \"cd /d \"{workDir}\" && chcp 65001 >nul && \"{script.FilePath}\"{argsStr}\"";
+                    psi.Arguments = $"/c \"cd /d \"{workDir}\" && \"{script.FilePath}\"{argsStr}\"";
                 }
 
                 using var proc = new Process { StartInfo = psi, EnableRaisingEvents = true };
@@ -291,19 +266,10 @@ $PSCommandPath = '{escapedScriptPath}'
                     _currentProcess = proc;
                 }
 
-                proc.OutputDataReceived += (_, e) =>
-                {
-                    if (e.Data != null) AppendOutput(e.Data, false);
-                };
-
-                proc.ErrorDataReceived += (_, e) =>
-                {
-                    if (e.Data != null) AppendOutput(e.Data, true);
-                };
-
                 proc.Start();
-                proc.BeginOutputReadLine();
-                proc.BeginErrorReadLine();
+
+                var stdoutTask = EncodingHelper.StreamLinesAsync(proc.StandardOutput.BaseStream, AppendOutput, isError: false, cancellationToken);
+                var stderrTask = EncodingHelper.StreamLinesAsync(proc.StandardError.BaseStream, AppendOutput, isError: true, cancellationToken);
 
                 using (cancellationToken.Register(() =>
                 {
@@ -317,7 +283,7 @@ $PSCommandPath = '{escapedScriptPath}'
                     catch { }
                 }))
                 {
-                    await proc.WaitForExitAsync(cancellationToken);
+                    await Task.WhenAll(stdoutTask, stderrTask, proc.WaitForExitAsync(cancellationToken));
                 }
 
                 stopwatch.Stop();
@@ -436,20 +402,26 @@ $PSCommandPath = '{escapedScriptPath}'
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                CreateNoWindow = true,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8
+                CreateNoWindow = true
             };
 
             if (scriptType == ScriptType.PowerShell)
             {
                 psi.FileName = GetPowerShellPath(false);
-                psi.Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{command.Replace("\"", "\\\"")}\"";
+                var psWrapper = $@"
+$ProgressPreference = 'SilentlyContinue'
+[Console]::InputEncoding = [Console]::OutputEncoding = $OutputEncoding = [System.Text.Encoding]::UTF8
+chcp 65001 >$null 2>&1
+{command}
+";
+                var bytes = Encoding.Unicode.GetBytes(psWrapper);
+                var base64 = Convert.ToBase64String(bytes);
+                psi.Arguments = $"-NoProfile -ExecutionPolicy Bypass -EncodedCommand {base64}";
             }
             else // Batch / CMD
             {
                 psi.FileName = "cmd.exe";
-                psi.Arguments = $"/c \"chcp 65001 >nul && {command}\"";
+                psi.Arguments = $"/c \"{command}\"";
             }
 
             using var proc = new Process { StartInfo = psi, EnableRaisingEvents = true };
@@ -458,19 +430,10 @@ $PSCommandPath = '{escapedScriptPath}'
                 _currentProcess = proc;
             }
 
-            proc.OutputDataReceived += (_, e) =>
-            {
-                if (e.Data != null) AppendOutput(e.Data, false);
-            };
-
-            proc.ErrorDataReceived += (_, e) =>
-            {
-                if (e.Data != null) AppendOutput(e.Data, true);
-            };
-
             proc.Start();
-            proc.BeginOutputReadLine();
-            proc.BeginErrorReadLine();
+
+            var stdoutTask = EncodingHelper.StreamLinesAsync(proc.StandardOutput.BaseStream, AppendOutput, isError: false, cancellationToken);
+            var stderrTask = EncodingHelper.StreamLinesAsync(proc.StandardError.BaseStream, AppendOutput, isError: true, cancellationToken);
 
             using (cancellationToken.Register(() =>
             {
@@ -484,7 +447,7 @@ $PSCommandPath = '{escapedScriptPath}'
                 catch { }
             }))
             {
-                await proc.WaitForExitAsync(cancellationToken);
+                await Task.WhenAll(stdoutTask, stderrTask, proc.WaitForExitAsync(cancellationToken));
             }
 
             stopwatch.Stop();
