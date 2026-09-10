@@ -62,15 +62,20 @@
                     HorizontalAlignment="Right">
             <ui:Button x:Name="SecondaryButton"
                        Content="Отмена"
-                       Width="100"
+                       Appearance="Secondary"
+                       Height="34"
+                       MinWidth="100"
+                       Padding="16,0"
                        Margin="0,0,8,0"
                        Visibility="Collapsed"
                        Click="SecondaryButton_Click" />
             <ui:Button x:Name="PrimaryButton"
                        Content="OK"
                        Appearance="Primary"
+                       Height="34"
                        MinWidth="100"
-                       Padding="16,8"
+                       Padding="16,0"
+                       FontWeight="SemiBold"
                        Click="PrimaryButton_Click" />
         </StackPanel>
     </Grid>

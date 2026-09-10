@@ -45,12 +45,18 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Right">
             <ui:Button Content="Отмена"
-                       Width="100"
+                       Appearance="Secondary"
+                       Height="34"
+                       MinWidth="100"
+                       Padding="16,0"
                        Margin="0,0,8,0"
                        Click="CancelButton_Click" />
             <ui:Button Content="Удалить"
                        Appearance="Danger"
-                       Width="100"
+                       Height="34"
+                       MinWidth="100"
+                       Padding="16,0"
+                       FontWeight="SemiBold"
                        Click="DeleteButton_Click" />
         </StackPanel>
     </Grid>

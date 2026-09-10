@@ -36,7 +36,7 @@
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                 BorderThickness="0,0,0,1"
                 MouseDown="TitleBar_MouseDown">
-            <Grid Height="48">
+            <Grid Height="50">
                 <Grid.ColumnDefinitions>
                     <!-- Left: Title & Subtitle -->
                     <ColumnDefinition Width="Auto" />
@@ -48,61 +48,67 @@
 
                 <!-- Left: App Icon, Title & Subtitle -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,24,0">
-                    <Border Width="30" Height="30"
-                            CornerRadius="6"
+                    <Border Width="32" Height="32"
+                            CornerRadius="8"
+                            Background="{DynamicResource ControlFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                            BorderThickness="1"
                             ClipToBounds="True"
                             Margin="0,0,10,0">
-                        <Image Source="Resources/app_icon.png" RenderOptions.BitmapScalingMode="HighQuality" />
+                        <Image Source="Resources/app_icon.png" RenderOptions.BitmapScalingMode="HighQuality" Margin="2" />
                     </Border>
                     <StackPanel VerticalAlignment="Center">
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <TextBlock Text="Script Hub"
                                        FontSize="14"
                                        FontWeight="Bold"
                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
                             <Border CornerRadius="4"
                                     Background="{DynamicResource ControlFillColorSecondaryBrush}"
-                                    Padding="4,1"
-                                    Margin="6,0,0,0">
-                                <TextBlock Text="{Binding AppVersion}" FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    Padding="5,1"
+                                    Margin="8,0,0,0">
+                                <TextBlock Text="{Binding AppVersion}" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentFillColorDefaultBrush}" />
                             </Border>
                         </StackPanel>
-                        <TextBlock Text="Центр управления PowerShell и CMD-скриптами"
+                        <TextBlock Text="Центр управления PowerShell и CMD скриптами"
                                    FontSize="11"
                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                     </StackPanel>
                 </StackPanel>
 
-                <!-- Middle: Global Instant Search -->
-                <Grid Grid.Column="1" MaxWidth="460" Margin="12,0">
+                <!-- Middle: Global Instant Search Bar -->
+                <Grid Grid.Column="1" MaxWidth="480" Margin="16,0">
                     <ui:TextBox x:Name="SearchBox"
                                 Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
-                                PlaceholderText="Поиск скрипта по названию, тегам или коду... (Ctrl+F)"
+                                PlaceholderText="Поиск скриптов по названию, коду или тегам..."
                                 VerticalAlignment="Center"
                                 Height="34">
                         <ui:TextBox.Icon>
-                            <ui:SymbolIcon Symbol="Search24" FontSize="14" />
+                            <ui:SymbolIcon Symbol="Search24" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                         </ui:TextBox.Icon>
                     </ui:TextBox>
                 </Grid>
 
-                <!-- Right: Theme Switcher, Settings & System TitleBar -->
+                <!-- Right: Quick Actions & System TitleBar -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,8,0">
-                    <!-- GitHub Update Button (with Update Notification Badge) -->
+                    <!-- GitHub Update Button (with Notification Dot Badge) -->
                     <Grid Margin="0,0,4,0">
                         <ui:Button Appearance="Transparent"
-                                   Padding="6"
+                                   Width="34" Height="34"
+                                   Padding="0"
                                    Command="{Binding UpdateFromGitHubCommand}"
                                    ToolTip="Проверить и установить обновления">
                             <ui:SymbolIcon Symbol="ArrowSync24" FontSize="16" />
                         </ui:Button>
 
-                        <!-- Notification indicator when update is available -->
+                        <!-- Notification indicator dot when update is available -->
                         <Border Width="8" Height="8"
                                 CornerRadius="4"
                                 Background="#FF3B30"
                                 BorderBrush="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                                BorderThickness="1"
+                                BorderThickness="1.5"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Top"
                                 Margin="0,4,4,0"
@@ -112,7 +118,8 @@
 
                     <!-- Terminal Button (Header Quick Access) -->
                     <ui:Button Appearance="Transparent"
-                               Padding="6"
+                               Width="34" Height="34"
+                               Padding="0"
                                Margin="0,0,4,0"
                                Command="{Binding ToggleTerminalCommand}"
                                ToolTip="Интерактивный терминал (Ctrl+` или F12)">
@@ -121,16 +128,18 @@
 
                     <!-- Theme Toggle -->
                     <ui:Button Appearance="Transparent"
-                               Padding="6"
+                               Width="34" Height="34"
+                               Padding="0"
                                Margin="0,0,4,0"
                                Command="{Binding ToggleThemeCommand}"
-                               ToolTip="Переключить тему (Светлая / Темная)">
+                               ToolTip="Переключить тему оформления">
                         <ui:SymbolIcon Symbol="WeatherMoon24" FontSize="16" />
                     </ui:Button>
 
                     <!-- Settings Button -->
                     <ui:Button Appearance="Transparent"
-                               Padding="6"
+                               Width="34" Height="34"
+                               Padding="0"
                                Margin="0,0,12,0"
                                Command="{Binding NavigateCommand}"
                                CommandParameter="Settings"
@@ -167,11 +176,11 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0">
-                        <TextBlock Text="НАВИГАЦИЯ"
+                        <TextBlock Text="МЕНЮ"
                                    FontSize="11"
                                    FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                                   Margin="10,0,0,8" />
+                                   Margin="10,0,0,10" />
 
                         <!-- 1. All Scripts -->
                         <RadioButton GroupName="NavGroup"
@@ -220,7 +229,7 @@
                                      CommandParameter="Favorites"
                                      Style="{StaticResource NavRadioButtonStyle}">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <ui:SymbolIcon Symbol="Star24" FontSize="16" Foreground="#FFD700" Margin="0,0,10,0" />
+                                <ui:SymbolIcon Symbol="Star24" FontSize="16" Foreground="#FFB900" Margin="0,0,10,0" />
                                 <TextBlock Text="Избранное" FontSize="13" VerticalAlignment="Center" />
                             </StackPanel>
                         </RadioButton>
@@ -233,7 +242,7 @@
                                      CommandParameter="History"
                                      Style="{StaticResource NavRadioButtonStyle}">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <ui:SymbolIcon Symbol="History24" FontSize="16" Margin="0,0,10,0" />
+                                <ui:SymbolIcon Symbol="History24" FontSize="16" Foreground="#881798" Margin="0,0,10,0" />
                                 <TextBlock Text="История запусков" FontSize="13" VerticalAlignment="Center" />
                             </StackPanel>
                         </RadioButton>
@@ -258,32 +267,34 @@
                         <!-- 1. Add Script Button -->
                         <ui:Button Appearance="Primary"
                                    HorizontalAlignment="Stretch"
-                                   Padding="12,10"
+                                   Height="36"
+                                   Padding="12,0"
                                    Margin="0,0,0,6"
                                    Command="{Binding ShowAddScriptCommand}"
                                    ToolTip="Создать или импортировать новый скрипт (Ctrl+N)">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <ui:SymbolIcon Symbol="Add24" FontSize="16" Margin="0,0,6,0" />
-                                <TextBlock Text="+ Добавить скрипт" FontWeight="SemiBold" FontSize="13" />
+                                <TextBlock Text="Добавить скрипт" FontWeight="SemiBold" FontSize="13" />
                             </StackPanel>
                         </ui:Button>
 
                         <!-- 2. Interactive Terminal Button -->
                         <ui:Button Appearance="Secondary"
                                    HorizontalAlignment="Stretch"
-                                   Padding="12,8"
+                                   Height="34"
+                                   Padding="10,0"
                                    Command="{Binding ToggleTerminalCommand}"
                                    ToolTip="Открыть встроенный интерактивный терминал (Ctrl+` или F12)">
-                            <Grid HorizontalAlignment="Stretch" Width="170">
+                            <Grid HorizontalAlignment="Stretch" Width="176">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                                     <ui:SymbolIcon Symbol="WindowConsole20" FontSize="15" Foreground="{DynamicResource AccentFillColorDefaultBrush}" Margin="0,0,8,0" />
                                     <TextBlock Text="Терминал" FontWeight="SemiBold" FontSize="12.5" VerticalAlignment="Center" />
                                 </StackPanel>
                                 <Border HorizontalAlignment="Right"
                                         Background="{DynamicResource ControlFillColorSecondaryBrush}"
-                                        CornerRadius="3"
-                                        Padding="4,1">
-                                    <TextBlock Text="Ctrl+`" FontSize="10" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                                        CornerRadius="4"
+                                        Padding="5,1">
+                                    <TextBlock Text="Ctrl+`" FontSize="10.5" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                                 </Border>
                             </Grid>
                         </ui:Button>

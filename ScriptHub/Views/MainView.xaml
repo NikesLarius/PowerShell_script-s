@@ -27,7 +27,7 @@
                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                 BorderThickness="0,0,0,1"
-                Padding="24,12">
+                Padding="24,14">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -35,7 +35,7 @@
                 </Grid.RowDefinitions>
 
                 <!-- Row 1: Section Title, Count & Sort / View Switchers -->
-                <Grid Grid.Row="0" Margin="0,0,0,10">
+                <Grid Grid.Row="0" Margin="0,0,0,12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -49,10 +49,13 @@
                                    Margin="0,0,10,0" />
                         <Border CornerRadius="10"
                                 Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                BorderThickness="1"
                                 Padding="8,2"
                                 VerticalAlignment="Center">
                             <TextBlock Text="{Binding FilteredScriptsCount, StringFormat='{}{0} шт.'}"
-                                       FontSize="11"
+                                       FontSize="11.5"
+                                       FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                         </Border>
                     </StackPanel>
@@ -61,20 +64,22 @@
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                         <!-- Quick Run Last -->
                         <ui:Button Appearance="Secondary"
-                                   Padding="10,6"
+                                   Height="34"
+                                   Padding="12,0"
                                    Margin="0,0,10,0"
                                    Command="{Binding RunLastScriptCommand}"
                                    ToolTip="Запустить последний использованный скрипт">
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <ui:SymbolIcon Symbol="Play20" FontSize="14" Margin="0,0,6,0" />
-                                <TextBlock Text="Запустить последний" FontSize="12" />
+                                <TextBlock Text="Запустить последний" FontSize="12.5" FontWeight="SemiBold" />
                             </StackPanel>
                         </ui:Button>
 
                         <!-- Sort Order ComboBox -->
                         <ComboBox SelectedValue="{Binding SelectedSortOrder}"
                                   SelectedValuePath="DataContext"
-                                  Width="170"
+                                  Width="180"
+                                  Height="34"
                                   Margin="0,0,8,0">
                             <ComboBoxItem Content="Пользовательский" DataContext="{x:Static models:ScriptSortOrder.CustomOrder}" />
                             <ComboBoxItem Content="По имени (А-Я)" DataContext="{x:Static models:ScriptSortOrder.NameAsc}" />
@@ -84,33 +89,39 @@
                             <ComboBoxItem Content="По последнему запуску" DataContext="{x:Static models:ScriptSortOrder.ByLastRun}" />
                         </ComboBox>
 
-                        <!-- Tile Sizing Buttons -->
+                        <!-- Tile Sizing Segmented Control -->
                         <Border CornerRadius="6"
                                 Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                BorderThickness="1"
                                 Padding="2"
+                                Height="34"
                                 Margin="0,0,8,0">
                             <StackPanel Orientation="Horizontal">
                                 <ui:Button Appearance="Transparent"
-                                           Padding="6,4"
+                                           Width="30" Height="28"
+                                           Padding="0"
                                            Command="{Binding SetTileSizeCommand}"
                                            CommandParameter="{x:Static models:TileSize.Standard}"
-                                           ToolTip="Стандартный размер">
+                                           ToolTip="Стандартные карточки">
                                     <ui:SymbolIcon Symbol="Grid24" FontSize="14" />
                                 </ui:Button>
 
                                 <ui:Button Appearance="Transparent"
-                                           Padding="6,4"
+                                           Width="30" Height="28"
+                                           Padding="0"
                                            Command="{Binding SetTileSizeCommand}"
                                            CommandParameter="{x:Static models:TileSize.Wide}"
-                                           ToolTip="Широкий размер">
+                                           ToolTip="Широкие карточки">
                                     <ui:SymbolIcon Symbol="Table24" FontSize="14" />
                                 </ui:Button>
 
                                 <ui:Button Appearance="Transparent"
-                                           Padding="6,4"
+                                           Width="30" Height="28"
+                                           Padding="0"
                                            Command="{Binding SetTileSizeCommand}"
                                            CommandParameter="{x:Static models:TileSize.Compact}"
-                                           ToolTip="Компактный размер">
+                                           ToolTip="Компактные карточки">
                                     <ui:SymbolIcon Symbol="AppsListDetail24" FontSize="14" />
                                 </ui:Button>
                             </StackPanel>
@@ -118,9 +129,10 @@
 
                         <!-- Refresh -->
                         <ui:Button Appearance="Transparent"
-                                   Padding="6,4"
+                                   Width="34" Height="34"
+                                   Padding="0"
                                    Command="{Binding RefreshCommand}"
-                                   ToolTip="Обновить статус файлов">
+                                   ToolTip="Обновить статус файлов на диске">
                             <ui:SymbolIcon Symbol="ArrowClockwise24" FontSize="16" />
                         </ui:Button>
                     </StackPanel>
@@ -139,40 +151,9 @@
                                 <RadioButton Content="{Binding Name}"
                                              GroupName="CategoryFilterGroup"
                                              Margin="0,0,6,0"
-                                             Padding="12,4"
-                                             FontSize="12"
                                              Click="CategoryFilter_Click"
-                                             Tag="{Binding Id}">
-                                    <RadioButton.Style>
-                                        <Style TargetType="RadioButton">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="RadioButton">
-                                                        <Border x:Name="PillBorder"
-                                                                CornerRadius="14"
-                                                                Background="{DynamicResource ControlFillColorDefaultBrush}"
-                                                                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
-                                                                BorderThickness="1"
-                                                                Padding="{TemplateBinding Padding}"
-                                                                Cursor="Hand">
-                                                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                                        </Border>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsChecked" Value="True">
-                                                                <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                                                                <Setter TargetName="PillBorder" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                                                                <Setter Property="Foreground" Value="White" />
-                                                            </Trigger>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </RadioButton.Style>
-                                </RadioButton>
+                                             Tag="{Binding Id}"
+                                             Style="{StaticResource CategoryPillRadioButtonStyle}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

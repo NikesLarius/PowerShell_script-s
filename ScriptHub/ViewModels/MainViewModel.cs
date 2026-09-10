@@ -30,7 +30,6 @@ public class MainViewModel : ViewModelBase
     private readonly IBackupService _backupService;
     private readonly IUpdateService _updateService;
     private readonly Action<ThemeMode> _onThemeChanged;
-    private readonly Action<double> _onOpacityChanged;
 
     private ActiveViewType _activeView = ActiveViewType.Tiles;
     private string _currentNavTag = "All";
@@ -205,8 +204,7 @@ public class MainViewModel : ViewModelBase
         IDialogService dialogService,
         IBackupService backupService,
         IUpdateService updateService,
-        Action<ThemeMode> onThemeChanged,
-        Action<double> onOpacityChanged)
+        Action<ThemeMode> onThemeChanged)
     {
         _scriptService = scriptService;
         _processService = processService;
@@ -215,7 +213,6 @@ public class MainViewModel : ViewModelBase
         _backupService = backupService;
         _updateService = updateService;
         _onThemeChanged = onThemeChanged;
-        _onOpacityChanged = onOpacityChanged;
 
         ConsoleVM = new ExecutionConsoleViewModel(_processService);
         HistoryVM = new HistoryViewModel(_historyService, _dialogService, RerunScriptById);
@@ -225,7 +222,6 @@ public class MainViewModel : ViewModelBase
             _dialogService, 
             _updateService, 
             _onThemeChanged, 
-            _onOpacityChanged, 
             () => _ = InitializeAsync());
         
         EditorVM = new ScriptEditorViewModel(

@@ -55,56 +55,18 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="Тема оформления" FontSize="14" FontWeight="SemiBold" />
-                                <TextBlock Text="Выберите светлую, темную тему или тему как в Windows 11"
+                                <TextBlock Text="Автоматическая синхронизация с темой Windows (эффект Mica) или выбор темы вручную"
                                            FontSize="12"
                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                             </StackPanel>
                             <ComboBox Grid.Column="1"
                                       SelectedValue="{Binding SelectedTheme, Mode=TwoWay}"
                                       SelectedValuePath="Tag"
-                                      Width="160">
-                                <ComboBoxItem Content="Как в системе" Tag="{x:Static models:ThemeMode.System}" />
-                                <ComboBoxItem Content="Светлая" Tag="{x:Static models:ThemeMode.Light}" />
-                                <ComboBoxItem Content="Темная" Tag="{x:Static models:ThemeMode.Dark}" />
+                                      Width="180">
+                                <ComboBoxItem Content="Как в Windows (системная)" Tag="{x:Static models:ThemeMode.System}" />
+                                <ComboBoxItem Content="Светлая тема" Tag="{x:Static models:ThemeMode.Light}" />
+                                <ComboBoxItem Content="Темная тема" Tag="{x:Static models:ThemeMode.Dark}" />
                             </ComboBox>
-                        </Grid>
-
-                        <Separator Margin="0,4,0,14" />
-
-                        <!-- Window Opacity Slider -->
-                        <Grid Margin="0,0,0,14">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="220" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="Прозрачность приложения" FontSize="14" FontWeight="SemiBold" />
-                                <TextBlock Text="Настройте уровень прозрачности окна программы (от 20% до 100%)"
-                                           FontSize="12"
-                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                            </StackPanel>
-                            <Grid Grid.Column="1" VerticalAlignment="Center">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="46" />
-                                </Grid.ColumnDefinitions>
-                                <Slider Grid.Column="0"
-                                        Minimum="0.20"
-                                        Maximum="1.00"
-                                        SmallChange="0.05"
-                                        LargeChange="0.10"
-                                        TickFrequency="0.05"
-                                        IsSnapToTickEnabled="False"
-                                        Value="{Binding WindowOpacity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        VerticalAlignment="Center"
-                                        Margin="0,0,10,0" />
-                                <TextBlock Grid.Column="1"
-                                           Text="{Binding WindowOpacityPercent, StringFormat='{}{0}%'}"
-                                           FontSize="13"
-                                           FontWeight="SemiBold"
-                                           VerticalAlignment="Center"
-                                           HorizontalAlignment="Right" />
-                            </Grid>
                         </Grid>
 
                         <Separator Margin="0,4,0,14" />
@@ -124,7 +86,7 @@
                             <ComboBox Grid.Column="1"
                                       SelectedValue="{Binding DefaultTileSize, Mode=TwoWay}"
                                       SelectedValuePath="Tag"
-                                      Width="160">
+                                      Width="180">
                                 <ComboBoxItem Content="Стандартный" Tag="{x:Static models:TileSize.Standard}" />
                                 <ComboBoxItem Content="Широкий" Tag="{x:Static models:TileSize.Wide}" />
                                 <ComboBoxItem Content="Компактный" Tag="{x:Static models:TileSize.Compact}" />
@@ -197,9 +159,12 @@
                                 <ui:TextBox Grid.Column="0"
                                             Text="{Binding DefaultWorkingDirectory, UpdateSourceTrigger=PropertyChanged}"
                                             PlaceholderText="По умолчанию"
+                                            Height="34"
                                             Margin="0,0,4,0" />
                                 <ui:Button Grid.Column="1"
                                            Content="..."
+                                           Height="34"
+                                           Padding="12,0"
                                            Command="{Binding BrowseDefaultWorkDirCommand}"
                                            ToolTip="Выбрать папку" />
                             </Grid>
@@ -221,45 +186,47 @@
                         <Grid Margin="0,0,0,16">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="130" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
                             <ui:TextBox Grid.Column="0"
                                         Text="{Binding NewCategoryName, UpdateSourceTrigger=PropertyChanged}"
                                         PlaceholderText="Название новой категории..."
+                                        Height="34"
                                         Margin="0,0,8,0" />
 
                             <ComboBox Grid.Column="1"
                                       SelectedValue="{Binding NewCategoryColor}"
                                       SelectedValuePath="Tag"
+                                      Height="34"
                                       Margin="0,0,8,0">
                                 <ComboBoxItem Tag="#0078D4">
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <Ellipse Width="12" Height="12" Fill="#0078D4" Margin="0,0,6,0" />
                                         <TextBlock Text="Синий" />
                                     </StackPanel>
                                 </ComboBoxItem>
                                 <ComboBoxItem Tag="#107C41">
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <Ellipse Width="12" Height="12" Fill="#107C41" Margin="0,0,6,0" />
                                         <TextBlock Text="Зеленый" />
                                     </StackPanel>
                                 </ComboBoxItem>
                                 <ComboBoxItem Tag="#D83B01">
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <Ellipse Width="12" Height="12" Fill="#D83B01" Margin="0,0,6,0" />
                                         <TextBlock Text="Оранжевый" />
                                     </StackPanel>
                                 </ComboBoxItem>
                                 <ComboBoxItem Tag="#881798">
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <Ellipse Width="12" Height="12" Fill="#881798" Margin="0,0,6,0" />
                                         <TextBlock Text="Фиолетовый" />
                                     </StackPanel>
                                 </ComboBoxItem>
                                 <ComboBoxItem Tag="#E81123">
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <Ellipse Width="12" Height="12" Fill="#E81123" Margin="0,0,6,0" />
                                         <TextBlock Text="Красный" />
                                     </StackPanel>
@@ -269,6 +236,9 @@
                             <ui:Button Grid.Column="2"
                                        Content="+ Добавить"
                                        Appearance="Primary"
+                                       Height="34"
+                                       Padding="14,0"
+                                       FontWeight="SemiBold"
                                        Command="{Binding AddCategoryCommand}" />
                         </Grid>
 
@@ -297,7 +267,8 @@
                                                        Margin="0,0,8,0" />
 
                                             <ui:Button Appearance="Transparent"
-                                                       Padding="2"
+                                                       Width="22" Height="22"
+                                                       Padding="0"
                                                        Visibility="{Binding IsSystem, Converter={StaticResource BoolToVisConv}, ConverterParameter=Inverted}"
                                                        Command="{Binding DataContext.DeleteCategoryCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                        CommandParameter="{Binding}"
@@ -331,19 +302,23 @@
 
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                             <ui:Button Appearance="Primary"
+                                       Height="34"
+                                       Padding="14,0"
                                        Margin="0,0,10,0"
                                        Command="{Binding ExportBackupCommand}">
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <ui:SymbolIcon Symbol="ArrowDownload24" FontSize="16" Margin="0,0,6,0" />
-                                    <TextBlock Text="Экспорт конфигурации (.zip)" />
+                                    <TextBlock Text="Экспорт конфигурации (.zip)" FontWeight="SemiBold" FontSize="12.5" />
                                 </StackPanel>
                             </ui:Button>
 
                             <ui:Button Appearance="Secondary"
+                                       Height="34"
+                                       Padding="14,0"
                                        Command="{Binding ImportBackupCommand}">
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <ui:SymbolIcon Symbol="ArrowUpload24" FontSize="16" Margin="0,0,6,0" />
-                                    <TextBlock Text="Импорт конфигурации (.zip)" />
+                                    <TextBlock Text="Импорт конфигурации (.zip)" FontSize="12.5" />
                                 </StackPanel>
                             </ui:Button>
                         </StackPanel>
@@ -382,6 +357,8 @@
                             <Border Grid.Column="1"
                                     CornerRadius="4"
                                     Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
                                     Padding="8,4"
                                     VerticalAlignment="Top">
                                 <TextBlock Text="Ветка: main" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
@@ -390,19 +367,23 @@
 
                         <StackPanel Orientation="Horizontal" Margin="0,4,0,10">
                             <ui:Button Appearance="Primary"
+                                       Height="34"
+                                       Padding="14,0"
                                        Margin="0,0,10,0"
                                        Command="{Binding UpdateFromGitHubCommand}">
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <ui:SymbolIcon Symbol="ArrowSync24" FontSize="16" Margin="0,0,6,0" />
-                                    <TextBlock Text="Проверить обновления" />
+                                    <TextBlock Text="Проверить обновления" FontWeight="SemiBold" FontSize="12.5" />
                                 </StackPanel>
                             </ui:Button>
 
                             <ui:Button Appearance="Secondary"
+                                       Height="34"
+                                       Padding="14,0"
                                        Command="{Binding OpenGitHubRepoCommand}">
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <ui:SymbolIcon Symbol="Globe24" FontSize="16" Margin="0,0,6,0" />
-                                    <TextBlock Text="Открыть репозиторий" />
+                                    <TextBlock Text="Открыть репозиторий" FontSize="12.5" />
                                 </StackPanel>
                             </ui:Button>
                         </StackPanel>

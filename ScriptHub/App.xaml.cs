@@ -63,7 +63,6 @@ public partial class App : Application
 
             var config = scriptService.GetConfig();
             mainWindow.ApplyTheme(config.Theme);
-            mainWindow.ApplyOpacity(config.WindowOpacity);
 
             app.Run(mainWindow);
         }
@@ -114,13 +113,6 @@ public partial class App : Application
                     if (Current?.MainWindow is MainWindow mw)
                     {
                         mw.ApplyTheme(themeMode);
-                    }
-                },
-                opacity =>
-                {
-                    if (Current?.MainWindow is MainWindow mw)
-                    {
-                        mw.ApplyOpacity(opacity);
                     }
                 });
         });

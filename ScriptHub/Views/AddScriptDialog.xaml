@@ -16,10 +16,11 @@
                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                 BorderThickness="0,0,0,1"
-                Padding="24,16">
-            <StackPanel Orientation="Horizontal">
+                Padding="24,14">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <ui:Button Appearance="Transparent"
-                           Padding="6,6"
+                           Width="34" Height="34"
+                           Padding="0"
                            Margin="0,0,12,0"
                            Command="{Binding CancelCommand}"
                            ToolTip="Вернуться назад">
@@ -28,10 +29,10 @@
 
                 <StackPanel>
                     <TextBlock Text="Добавление скрипта"
-                               FontSize="20"
+                               FontSize="18"
                                FontWeight="SemiBold" />
-                    <TextBlock Text="Выберите способ добавления скрипта в вашу коллекцию Script Hub"
-                               FontSize="13"
+                    <TextBlock Text="Выберите способ добавления скрипта в коллекцию Script Hub"
+                               FontSize="12"
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                 </StackPanel>
             </StackPanel>
@@ -39,7 +40,7 @@
 
         <!-- OPTIONS CARDS -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24">
-            <StackPanel MaxWidth="800" HorizontalAlignment="Center" Margin="0,32,0,0">
+            <StackPanel MaxWidth="800" HorizontalAlignment="Center" Margin="0,24,0,0">
                 <TextBlock Text="Как вы хотите добавить скрипт?"
                            FontSize="16"
                            FontWeight="SemiBold"
@@ -82,6 +83,9 @@
                         <ui:Button Grid.Column="2"
                                    Content="Выбрать файл..."
                                    Appearance="Primary"
+                                   Height="36"
+                                   Padding="16,0"
+                                   FontWeight="SemiBold"
                                    VerticalAlignment="Center"
                                    Command="{Binding ImportExistingCommand}"
                                    Margin="16,0,0,0" />
@@ -124,6 +128,9 @@
                         <ui:Button Grid.Column="2"
                                    Content="Создать .ps1"
                                    Appearance="Secondary"
+                                   Height="36"
+                                   Padding="16,0"
+                                   FontWeight="SemiBold"
                                    VerticalAlignment="Center"
                                    Command="{Binding CreateNewPowerShellCommand}"
                                    Margin="16,0,0,0" />
@@ -166,6 +173,9 @@
                         <ui:Button Grid.Column="2"
                                    Content="Создать .bat"
                                    Appearance="Secondary"
+                                   Height="36"
+                                   Padding="16,0"
+                                   FontWeight="SemiBold"
                                    VerticalAlignment="Center"
                                    Command="{Binding CreateNewBatchCommand}"
                                    Margin="16,0,0,0" />

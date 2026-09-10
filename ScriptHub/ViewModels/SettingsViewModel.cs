@@ -17,7 +17,6 @@ public class SettingsViewModel : ViewModelBase
     private readonly IDialogService _dialogService;
     private readonly IUpdateService _updateService;
     private readonly Action<ThemeMode> _onThemeChanged;
-    private readonly Action<double> _onOpacityChanged;
     private readonly Action _onDataReloadNeeded;
 
     private AppConfigModel _config = new();
@@ -39,33 +38,6 @@ public class SettingsViewModel : ViewModelBase
                 _onThemeChanged(value);
                 SaveConfig();
             }
-        }
-    }
-
-    public double WindowOpacity
-    {
-        get => _config.WindowOpacity <= 0 ? 1.0 : _config.WindowOpacity;
-        set
-        {
-            var clamped = Math.Clamp(value, 0.2, 1.0);
-            if (Math.Abs(_config.WindowOpacity - clamped) > 0.001)
-            {
-                _config.WindowOpacity = clamped;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(WindowOpacityPercent));
-                _onOpacityChanged?.Invoke(clamped);
-                SaveConfig();
-            }
-        }
-    }
-
-    public int WindowOpacityPercent
-    {
-        get => (int)Math.Round(WindowOpacity * 100);
-        set
-        {
-            var frac = Math.Clamp(value, 20, 100) / 100.0;
-            WindowOpacity = frac;
         }
     }
 
@@ -185,7 +157,6 @@ public class SettingsViewModel : ViewModelBase
         IDialogService dialogService,
         IUpdateService updateService,
         Action<ThemeMode> onThemeChanged,
-        Action<double> onOpacityChanged,
         Action onDataReloadNeeded)
     {
         _scriptService = scriptService;
@@ -193,7 +164,6 @@ public class SettingsViewModel : ViewModelBase
         _dialogService = dialogService;
         _updateService = updateService;
         _onThemeChanged = onThemeChanged;
-        _onOpacityChanged = onOpacityChanged;
         _onDataReloadNeeded = onDataReloadNeeded;
 
         ExportBackupCommand = new AsyncRelayCommand(ExportBackupAsync);
@@ -211,8 +181,6 @@ public class SettingsViewModel : ViewModelBase
     {
         _config = _scriptService.GetConfig();
         OnPropertyChanged(nameof(SelectedTheme));
-        OnPropertyChanged(nameof(WindowOpacity));
-        OnPropertyChanged(nameof(WindowOpacityPercent));
         OnPropertyChanged(nameof(DefaultTileSize));
         OnPropertyChanged(nameof(DefaultSortOrder));
         OnPropertyChanged(nameof(PreferPowerShell7));
