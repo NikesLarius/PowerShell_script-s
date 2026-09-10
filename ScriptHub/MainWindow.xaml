@@ -97,6 +97,15 @@
                         <ui:SymbolIcon Symbol="ArrowSync24" FontSize="16" />
                     </ui:Button>
 
+                    <!-- Terminal Button -->
+                    <ui:Button Appearance="Transparent"
+                               Padding="6"
+                               Margin="0,0,4,0"
+                               Command="{Binding ToggleTerminalCommand}"
+                               ToolTip="Интерактивный терминал (Ctrl+` или F12)">
+                        <ui:SymbolIcon Symbol="WindowConsole20" FontSize="16" />
+                    </ui:Button>
+
                     <!-- Theme Toggle -->
                     <ui:Button Appearance="Transparent"
                                Padding="6"
@@ -216,9 +225,30 @@
                             </StackPanel>
                         </RadioButton>
 
-                        <Separator Margin="6,12,6,12" />
+                        <!-- 6. Interactive Terminal Drawer -->
+                        <ui:Button Appearance="Transparent"
+                                   HorizontalAlignment="Stretch"
+                                   Padding="10,8"
+                                   Margin="0,0,0,4"
+                                   Command="{Binding ToggleTerminalCommand}"
+                                   ToolTip="Открыть встроенный интерактивный терминал (Ctrl+` или F12)">
+                            <Grid HorizontalAlignment="Stretch" Width="176">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="WindowConsole20" FontSize="16" Foreground="{DynamicResource AccentFillColorDefaultBrush}" Margin="0,0,10,0" />
+                                    <TextBlock Text="Терминал" FontSize="13" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <Border HorizontalAlignment="Right"
+                                        Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                                        CornerRadius="3"
+                                        Padding="4,1">
+                                    <TextBlock Text="Ctrl+`" FontSize="10" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                                </Border>
+                            </Grid>
+                        </ui:Button>
 
-                        <!-- 6. Settings -->
+                        <Separator Margin="6,8,6,8" />
+
+                        <!-- 7. Settings -->
                         <RadioButton GroupName="NavGroup"
                                      IsChecked="{Binding CurrentNavTag, Converter={StaticResource StringEqualsConv}, ConverterParameter='Settings'}"
                                      Command="{Binding NavigateCommand}"

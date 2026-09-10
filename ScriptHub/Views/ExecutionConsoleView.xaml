@@ -12,47 +12,54 @@
     <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
             BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}"
             BorderThickness="0,1,0,0"
-            MinHeight="200"
-            MaxHeight="450">
+            MinHeight="240"
+            MaxHeight="500">
         <Grid>
             <Grid.RowDefinitions>
-                <!-- Toolbar Header -->
+                <!-- 0. Toolbar Header -->
                 <RowDefinition Height="Auto" />
-                <!-- Terminal Output -->
+                <!-- 1. Terminal Output -->
                 <RowDefinition Height="*" />
+                <!-- 2. Interactive Input Line -->
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- HEADER / TOOLBAR -->
+            <!-- 0. HEADER / TOOLBAR -->
             <Border Grid.Row="0"
                     Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                     BorderThickness="0,0,0,1"
-                    Padding="14,8">
+                    Padding="12,6">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <!-- Left: Title, Status, Duration -->
+                    <!-- Left: Title, Terminal Mode Badge, Status, Duration, Working Directory -->
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                        <ui:SymbolIcon Symbol="WindowConsole20" FontSize="16" Margin="0,0,8,0" />
-                        
-                        <TextBlock Text="Вывод выполнения:"
+                        <ui:SymbolIcon Symbol="WindowConsole20" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
+
+                        <TextBlock Text="Консоль / Терминал:"
                                    FontWeight="SemiBold"
                                    FontSize="13"
+                                   VerticalAlignment="Center"
                                    Margin="0,0,6,0" />
 
                         <TextBlock Text="{Binding ScriptTitle}"
                                    FontWeight="Bold"
                                    FontSize="13"
                                    Foreground="{DynamicResource AccentFillColorDefaultBrush}"
-                                   Margin="0,0,12,0" />
+                                   VerticalAlignment="Center"
+                                   MaxWidth="300"
+                                   TextTrimming="CharacterEllipsis"
+                                   Margin="0,0,10,0" />
 
                         <!-- Status badge -->
                         <Border CornerRadius="4"
                                 Padding="8,2"
                                 Background="{Binding Status, Converter={StaticResource StatusToColorConv}}"
+                                VerticalAlignment="Center"
                                 Margin="0,0,10,0">
                             <TextBlock Text="{Binding StatusText}"
                                        Foreground="White"
@@ -65,21 +72,62 @@
                                    FontSize="12"
                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                    VerticalAlignment="Center"
-                                   Margin="0,0,10,0" />
+                                   Margin="0,0,12,0" />
+
+                        <!-- Working Directory Hint -->
+                        <Border Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                                CornerRadius="4"
+                                Padding="6,2"
+                                VerticalAlignment="Center"
+                                ToolTip="{Binding WorkingDirectory}">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Folder20" FontSize="12" Margin="0,0,4,0" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                                <TextBlock Text="{Binding WorkingDirectory}"
+                                           FontSize="11"
+                                           MaxWidth="200"
+                                           TextTrimming="CharacterEllipsis"
+                                           Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
 
-                    <!-- Right: Control Buttons -->
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <!-- Right: Shell Switcher (PS / CMD), Stop, Copy, Clear, Close -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Shell Switcher -->
+                        <Border Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                                BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4"
+                                Padding="2"
+                                Margin="0,0,8,0">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton Content="PowerShell"
+                                             IsChecked="{Binding IsPowerShellActive, Mode=TwoWay}"
+                                             GroupName="ConsoleTypeGroup"
+                                             FontSize="11"
+                                             FontWeight="SemiBold"
+                                             Margin="4,1,6,1"
+                                             VerticalAlignment="Center" />
+                                <RadioButton Content="CMD"
+                                             IsChecked="{Binding IsCmdActive, Mode=TwoWay}"
+                                             GroupName="ConsoleTypeGroup"
+                                             FontSize="11"
+                                             FontWeight="SemiBold"
+                                             Margin="4,1,4,1"
+                                             VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
                         <!-- Stop Button -->
                         <ui:Button Appearance="Danger"
                                    Padding="10,4"
                                    Margin="0,0,6,0"
                                    Command="{Binding StopCommand}"
                                    IsEnabled="{Binding IsRunning}"
-                                   ToolTip="Остановить выполнение">
+                                   ToolTip="Остановить выполнение (Ctrl+C)">
                             <StackPanel Orientation="Horizontal">
                                 <ui:SymbolIcon Symbol="Stop20" FontSize="13" Margin="0,0,4,0" />
-                                <TextBlock Text="Остановить" FontSize="12" />
+                                <TextBlock Text="Стоп" FontSize="12" />
                             </StackPanel>
                         </ui:Button>
 
@@ -100,7 +148,7 @@
                                    Padding="8,4"
                                    Margin="0,0,6,0"
                                    Command="{Binding ClearCommand}"
-                                   ToolTip="Очистить вывод">
+                                   ToolTip="Очистить вывод (или напишите 'cls')">
                             <StackPanel Orientation="Horizontal">
                                 <ui:SymbolIcon Symbol="DismissCircle20" FontSize="13" Margin="0,0,4,0" />
                                 <TextBlock Text="Очистить" FontSize="12" />
@@ -111,14 +159,14 @@
                         <ui:Button Appearance="Transparent"
                                    Padding="6,4"
                                    Command="{Binding CloseCommand}"
-                                   ToolTip="Скрыть консоль">
+                                   ToolTip="Скрыть консоль (Esc / Ctrl+`)">
                             <ui:SymbolIcon Symbol="Dismiss20" FontSize="14" />
                         </ui:Button>
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <!-- TERMINAL TEXT BOX -->
+            <!-- 1. TERMINAL TEXT BOX (OUTPUT) -->
             <TextBox Grid.Row="1"
                      x:Name="TerminalTextBox"
                      Text="{Binding LogText, Mode=OneWay}"
@@ -128,13 +176,75 @@
                      FontFamily="Consolas, Cascadia Code, Segoe UI Mono, Courier New"
                      FontSize="12.5"
                      Background="#0C0C0C"
-                     Foreground="#CCCCCC"
+                     Foreground="#D4D4D4"
                      CaretBrush="#FFFFFF"
                      BorderThickness="0"
-                     Padding="14"
+                     Padding="12,8"
                      AcceptsReturn="True"
                      AcceptsTab="True"
                      TextWrapping="NoWrap" />
+
+            <!-- 2. INTERACTIVE COMMAND INPUT BAR -->
+            <Border Grid.Row="2"
+                    Background="#141414"
+                    BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}"
+                    BorderThickness="0,1,0,0"
+                    Padding="10,6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <!-- Prompt Badge -->
+                        <ColumnDefinition Width="Auto" />
+                        <!-- Command Input Box -->
+                        <ColumnDefinition Width="*" />
+                        <!-- Send Button -->
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Prompt Badge (PS > / CMD >) -->
+                    <Border Grid.Column="0"
+                            CornerRadius="4"
+                            Padding="8,4"
+                            Margin="0,0,8,0"
+                            Background="#005A9E"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="{Binding PromptBadgeText}"
+                                   Foreground="White"
+                                   FontFamily="Consolas, Cascadia Code, Segoe UI Mono"
+                                   FontWeight="Bold"
+                                   FontSize="12" />
+                    </Border>
+
+                    <!-- Interactive Command Input TextBox -->
+                    <ui:TextBox Grid.Column="1"
+                                x:Name="CommandInputBox"
+                                Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                                PlaceholderText="Введите команду (например: dir, ipconfig, ping ya.ru, Get-Service) и нажмите Enter... (↑ / ↓ история)"
+                                FontFamily="Consolas, Cascadia Code, Segoe UI Mono"
+                                FontSize="13"
+                                Background="#1E1E1E"
+                                Foreground="#FFFFFF"
+                                CaretBrush="#FFFFFF"
+                                BorderBrush="#333333"
+                                BorderThickness="1"
+                                Padding="10,6"
+                                VerticalAlignment="Center"
+                                PreviewKeyDown="CommandInputBox_PreviewKeyDown" />
+
+                    <!-- Send / Run Button -->
+                    <ui:Button Grid.Column="2"
+                               Appearance="Primary"
+                               Padding="12,6"
+                               Margin="8,0,0,0"
+                               VerticalAlignment="Center"
+                               Command="{Binding SendCommand}"
+                               ToolTip="Выполнить команду (Enter)">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Send24" FontSize="14" Margin="0,0,6,0" />
+                            <TextBlock Text="Ввод" FontWeight="SemiBold" FontSize="12" />
+                        </StackPanel>
+                    </ui:Button>
+                </Grid>
+            </Border>
         </Grid>
     </Border>
 </UserControl>

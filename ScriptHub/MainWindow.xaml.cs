@@ -231,6 +231,14 @@ public partial class MainWindow : FluentWindow
             }
         }
 
+        // Ctrl + ~ or F12 -> Toggle Interactive Terminal
+        if ((Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.OemTilde) || e.Key == Key.F12)
+        {
+            ViewModel.ToggleTerminalCommand.Execute(null);
+            e.Handled = true;
+            return;
+        }
+
         // Delete -> Delete script
         if (e.Key == Key.Delete && !ViewModel.IsEditorViewActive && !SearchBox.IsFocused)
         {

@@ -253,6 +253,7 @@ catch {{
             else
             {
                 psi.UseShellExecute = false;
+                psi.RedirectStandardInput = true;
                 psi.RedirectStandardOutput = true;
                 psi.RedirectStandardError = true;
                 psi.CreateNoWindow = true;
@@ -391,6 +392,152 @@ $PSCommandPath = '{escapedScriptPath}'
 
         result.Output = fullOutput.ToString();
         return result;
+    }
+
+    public async Task<ExecutionResult> ExecuteCommandAsync(
+        string command,
+        ScriptType scriptType,
+        string workingDirectory,
+        bool runAsAdmin,
+        Action<string, bool> outputCallback,
+        CancellationToken cancellationToken = default)
+    {
+        if (IsRunning)
+        {
+            throw new InvalidOperationException("Другой процесс уже выполняется. Дождитесь завершения или остановите его.");
+        }
+
+        var result = new ExecutionResult
+        {
+            StartTime = DateTime.UtcNow,
+            Status = ExecutionStatus.Running
+        };
+
+        ExecutionStateChanged?.Invoke(this, true);
+        var stopwatch = Stopwatch.StartNew();
+        var fullOutput = new StringBuilder();
+
+        void AppendOutput(string text, bool isError)
+        {
+            fullOutput.AppendLine(text);
+            outputCallback(text, isError);
+        }
+
+        var workDir = Directory.Exists(workingDirectory) 
+            ? workingDirectory 
+            : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                WorkingDirectory = workDir,
+                UseShellExecute = false,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8
+            };
+
+            if (scriptType == ScriptType.PowerShell)
+            {
+                psi.FileName = GetPowerShellPath(false);
+                psi.Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{command.Replace("\"", "\\\"")}\"";
+            }
+            else // Batch / CMD
+            {
+                psi.FileName = "cmd.exe";
+                psi.Arguments = $"/c \"chcp 65001 >nul && {command}\"";
+            }
+
+            using var proc = new Process { StartInfo = psi, EnableRaisingEvents = true };
+            lock (_lock)
+            {
+                _currentProcess = proc;
+            }
+
+            proc.OutputDataReceived += (_, e) =>
+            {
+                if (e.Data != null) AppendOutput(e.Data, false);
+            };
+
+            proc.ErrorDataReceived += (_, e) =>
+            {
+                if (e.Data != null) AppendOutput(e.Data, true);
+            };
+
+            proc.Start();
+            proc.BeginOutputReadLine();
+            proc.BeginErrorReadLine();
+
+            using (cancellationToken.Register(() =>
+            {
+                try
+                {
+                    if (!proc.HasExited)
+                    {
+                        proc.Kill(entireProcessTree: true);
+                    }
+                }
+                catch { }
+            }))
+            {
+                await proc.WaitForExitAsync(cancellationToken);
+            }
+
+            stopwatch.Stop();
+            result.EndTime = DateTime.UtcNow;
+            result.Duration = stopwatch.Elapsed;
+            result.ExitCode = proc.ExitCode;
+            result.Status = proc.ExitCode == 0 ? ExecutionStatus.Success : ExecutionStatus.Failed;
+        }
+        catch (OperationCanceledException)
+        {
+            stopwatch.Stop();
+            result.EndTime = DateTime.UtcNow;
+            result.Duration = stopwatch.Elapsed;
+            result.ExitCode = -999;
+            result.Status = ExecutionStatus.Cancelled;
+            AppendOutput("> Выполнение было остановлено пользователем.", true);
+        }
+        catch (Exception ex)
+        {
+            stopwatch.Stop();
+            result.EndTime = DateTime.UtcNow;
+            result.Duration = stopwatch.Elapsed;
+            result.ExitCode = -1;
+            result.Status = ExecutionStatus.Failed;
+            result.ErrorMessage = ex.Message;
+            AppendOutput($"> Ошибка: {ex.Message}", true);
+        }
+        finally
+        {
+            lock (_lock)
+            {
+                _currentProcess = null;
+            }
+            ExecutionStateChanged?.Invoke(this, false);
+        }
+
+        result.Output = fullOutput.ToString();
+        return result;
+    }
+
+    public void SendInput(string input)
+    {
+        lock (_lock)
+        {
+            try
+            {
+                if (_currentProcess is { HasExited: false })
+                {
+                    _currentProcess.StandardInput.WriteLine(input);
+                }
+            }
+            catch { }
+        }
     }
 
     public void StopCurrentProcess()

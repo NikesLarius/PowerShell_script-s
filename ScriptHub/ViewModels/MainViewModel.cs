@@ -170,6 +170,7 @@ public class MainViewModel : ViewModelBase
     public ICommand DeleteSelectedCommand { get; }
     public ICommand ToggleThemeCommand { get; }
     public ICommand UpdateFromGitHubCommand { get; }
+    public ICommand ToggleTerminalCommand { get; }
 
     public MainViewModel(
         IScriptService scriptService,
@@ -221,6 +222,17 @@ public class MainViewModel : ViewModelBase
         DeleteSelectedCommand = new AsyncRelayCommand(DeleteSelectedAsync);
         ToggleThemeCommand = new RelayCommand(ToggleTheme);
         UpdateFromGitHubCommand = new AsyncRelayCommand(async () => await SettingsVM.UpdateFromGitHubAsync());
+        ToggleTerminalCommand = new RelayCommand(() =>
+        {
+            if (ConsoleVM.IsOpen)
+            {
+                ConsoleVM.IsOpen = false;
+            }
+            else
+            {
+                ConsoleVM.OpenTerminalSession();
+            }
+        });
     }
 
     public async Task InitializeAsync()

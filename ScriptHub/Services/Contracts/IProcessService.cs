@@ -16,7 +16,16 @@ public interface IProcessService
         ScriptModel script, 
         Action<string, bool> outputCallback, 
         CancellationToken cancellationToken = default);
+
+    Task<ExecutionResult> ExecuteCommandAsync(
+        string command,
+        ScriptType scriptType,
+        string workingDirectory,
+        bool runAsAdmin,
+        Action<string, bool> outputCallback,
+        CancellationToken cancellationToken = default);
         
+    void SendInput(string input);
     void StopCurrentProcess();
     
     string ResolveWorkingDirectory(ScriptModel script);
