@@ -60,14 +60,22 @@ public partial class MessageDialog : FluentWindow
 
             case MessageDialogType.Question:
                 DialogSymbolIcon.Symbol = SymbolRegular.QuestionCircle24;
-                DialogSymbolIcon.Foreground = (Brush)FindResource("AccentFillColorDefaultBrush");
+                DialogSymbolIcon.Foreground = TryFindResource("AccentFillColorDefaultBrush") as Brush ?? Brushes.DodgerBlue;
                 break;
 
             case MessageDialogType.Information:
             default:
                 DialogSymbolIcon.Symbol = SymbolRegular.Info24;
-                DialogSymbolIcon.Foreground = (Brush)FindResource("AccentFillColorDefaultBrush");
+                DialogSymbolIcon.Foreground = TryFindResource("AccentFillColorDefaultBrush") as Brush ?? Brushes.DodgerBlue;
                 break;
+        }
+    }
+
+    private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+        {
+            DragMove();
         }
     }
 

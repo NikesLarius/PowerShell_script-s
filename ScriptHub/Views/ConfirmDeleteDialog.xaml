@@ -4,60 +4,70 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         Title="Удаление скрипта"
         Width="440"
-        Height="250"
+        SizeToContent="Height"
+        MinHeight="220"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
-        WindowBackdropType="Mica"
-        ExtendsContentIntoTitleBar="True">
+        WindowBackdropType="None"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+        ExtendsContentIntoTitleBar="True"
+        MouseDown="Window_MouseDown">
 
-    <Grid Margin="24">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            Padding="24">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <!-- Title -->
-        <TextBlock Grid.Row="0"
-                   Text="Удалить скрипт?"
-                   FontSize="20"
-                   FontWeight="SemiBold"
-                   Margin="0,0,0,12" />
-
-        <!-- Description -->
-        <TextBlock Grid.Row="1"
-                   x:Name="MessageTextBlock"
-                   Text="Вы действительно хотите удалить этот скрипт из Script Hub?"
-                   TextWrapping="Wrap"
-                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                   FontSize="14" />
-
-        <!-- Option Checkbox -->
-        <CheckBox Grid.Row="2"
-                  x:Name="DeleteFileCheckBox"
-                  Content="Удалить также сам файл скрипта с диска"
-                  Margin="0,16,0,16" />
-
-        <!-- Buttons -->
-        <StackPanel Grid.Row="3"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right">
-            <ui:Button Content="Отмена"
-                       Appearance="Secondary"
-                       Height="34"
-                       MinWidth="100"
-                       Padding="16,0"
-                       Margin="0,0,8,0"
-                       Click="CancelButton_Click" />
-            <ui:Button Content="Удалить"
-                       Appearance="Danger"
-                       Height="34"
-                       MinWidth="100"
-                       Padding="16,0"
+            <!-- Title -->
+            <TextBlock Grid.Row="0"
+                       Text="Удалить скрипт?"
+                       FontSize="20"
                        FontWeight="SemiBold"
-                       Click="DeleteButton_Click" />
-        </StackPanel>
-    </Grid>
+                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                       Margin="0,0,0,12" />
+
+            <!-- Description -->
+            <TextBlock Grid.Row="1"
+                       x:Name="MessageTextBlock"
+                       Text="Вы действительно хотите удалить этот скрипт из Script Hub?"
+                       TextWrapping="Wrap"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       FontSize="14" />
+
+            <!-- Option Checkbox -->
+            <CheckBox Grid.Row="2"
+                      x:Name="DeleteFileCheckBox"
+                      Content="Удалить также сам файл скрипта с диска"
+                      Margin="0,16,0,16" />
+
+            <!-- Buttons -->
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <ui:Button Content="Отмена"
+                           Appearance="Secondary"
+                           Height="34"
+                           MinWidth="100"
+                           Padding="16,0"
+                           Margin="0,0,8,0"
+                           Click="CancelButton_Click" />
+                <ui:Button Content="Удалить"
+                           Appearance="Danger"
+                           Height="34"
+                           MinWidth="100"
+                           Padding="16,0"
+                           FontWeight="SemiBold"
+                           Click="DeleteButton_Click" />
+            </StackPanel>
+        </Grid>
+    </Border>
 </ui:FluentWindow>

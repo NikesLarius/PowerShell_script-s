@@ -5,78 +5,87 @@
         Title="Уведомление"
         Width="460"
         SizeToContent="Height"
-        MinHeight="200"
+        MinHeight="180"
         MaxHeight="500"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
-        WindowBackdropType="Mica"
-        ExtendsContentIntoTitleBar="True">
+        WindowBackdropType="None"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+        ExtendsContentIntoTitleBar="True"
+        MouseDown="Window_MouseDown">
 
-    <Grid Margin="24,20,24,20">
-        <Grid.RowDefinitions>
-            <!-- 0. Title with Icon -->
-            <RowDefinition Height="Auto" />
-            <!-- 1. Message Content -->
-            <RowDefinition Height="*" />
-            <!-- 2. Buttons -->
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            Padding="24,20,24,20">
+        <Grid>
+            <Grid.RowDefinitions>
+                <!-- 0. Title with Icon -->
+                <RowDefinition Height="Auto" />
+                <!-- 1. Message Content -->
+                <RowDefinition Height="*" />
+                <!-- 2. Buttons -->
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <!-- 0. Header Icon & Title -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
-            <Border x:Name="IconBorder"
-                    Width="36" Height="36"
-                    CornerRadius="18"
-                    Background="{DynamicResource ControlFillColorSecondaryBrush}"
-                    Margin="0,0,12,0"
-                    VerticalAlignment="Center">
-                <ui:SymbolIcon x:Name="DialogSymbolIcon"
-                               Symbol="Info24"
-                               FontSize="20"
-                               Foreground="{DynamicResource AccentFillColorDefaultBrush}"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center" />
-            </Border>
+            <!-- 0. Header Icon & Title -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
+                <Border x:Name="IconBorder"
+                        Width="36" Height="36"
+                        CornerRadius="18"
+                        Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                        Margin="0,0,12,0"
+                        VerticalAlignment="Center">
+                    <ui:SymbolIcon x:Name="DialogSymbolIcon"
+                                   Symbol="Info24"
+                                   FontSize="20"
+                                   Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                </Border>
 
-            <TextBlock x:Name="TitleTextBlock"
-                       Text="Заголовок"
-                       FontSize="18"
-                       FontWeight="SemiBold"
-                       VerticalAlignment="Center" />
-        </StackPanel>
+                <TextBlock x:Name="TitleTextBlock"
+                           Text="Заголовок"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                           VerticalAlignment="Center" />
+            </StackPanel>
 
-        <!-- 1. Message Text -->
-        <TextBlock Grid.Row="1"
-                   x:Name="MessageTextBlock"
-                   Text="Текст сообщения"
-                   TextWrapping="Wrap"
-                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                   FontSize="13.5"
-                   LineHeight="20"
-                   Margin="0,0,0,24" />
+            <!-- 1. Message Text -->
+            <TextBlock Grid.Row="1"
+                       x:Name="MessageTextBlock"
+                       Text="Текст сообщения"
+                       TextWrapping="Wrap"
+                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                       FontSize="13.5"
+                       LineHeight="20"
+                       Margin="0,0,0,24" />
 
-        <!-- 2. Action Buttons -->
-        <StackPanel Grid.Row="2"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right">
-            <ui:Button x:Name="SecondaryButton"
-                       Content="Отмена"
-                       Appearance="Secondary"
-                       Height="34"
-                       MinWidth="100"
-                       Padding="16,0"
-                       Margin="0,0,8,0"
-                       Visibility="Collapsed"
-                       Click="SecondaryButton_Click" />
-            <ui:Button x:Name="PrimaryButton"
-                       Content="OK"
-                       Appearance="Primary"
-                       Height="34"
-                       MinWidth="100"
-                       Padding="16,0"
-                       FontWeight="SemiBold"
-                       Click="PrimaryButton_Click" />
-        </StackPanel>
-    </Grid>
+            <!-- 2. Action Buttons -->
+            <StackPanel Grid.Row="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <ui:Button x:Name="SecondaryButton"
+                           Content="Отмена"
+                           Appearance="Secondary"
+                           Height="34"
+                           MinWidth="100"
+                           Padding="16,0"
+                           Margin="0,0,8,0"
+                           Visibility="Collapsed"
+                           Click="SecondaryButton_Click" />
+                <ui:Button x:Name="PrimaryButton"
+                           Content="OK"
+                           Appearance="Primary"
+                           Height="34"
+                           MinWidth="100"
+                           Padding="16,0"
+                           FontWeight="SemiBold"
+                           Click="PrimaryButton_Click" />
+            </StackPanel>
+        </Grid>
+    </Border>
 </ui:FluentWindow>

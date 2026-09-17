@@ -110,7 +110,7 @@ public class ProcessService : IProcessService
 
         var workDir = ResolveWorkingDirectory(script);
         var appVersion = typeof(ProcessService).Assembly.GetName().Version;
-        var versionStr = appVersion != null ? $"{appVersion.Major}.{appVersion.Minor}" : "1.4";
+        var versionStr = appVersion != null ? $"{appVersion.Major}.{appVersion.Minor}" : "1.6";
         AppendOutput($"> Script Hub v{versionStr}", false);
         AppendOutput($"> Запуск: {script.Title}", false);
         AppendOutput($"> Файл: {script.FilePath}", false);

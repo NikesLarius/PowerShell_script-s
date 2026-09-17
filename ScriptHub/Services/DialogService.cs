@@ -75,6 +75,18 @@ public class DialogService : IDialogService
         return dlg.ShowDialog() == true ? dlg.FileName : null;
     }
 
+    public string? PickZipFile()
+    {
+        var dlg = new OpenFileDialog
+        {
+            Title = "Выберите архив конфигурации или скриптов (.zip)",
+            Filter = "ZIP архивы (*.zip)|*.zip|Все файлы (*.*)|*.*",
+            Multiselect = false
+        };
+
+        return dlg.ShowDialog() == true ? dlg.FileName : null;
+    }
+
     public string? PickFolder(string? defaultPath = null)
     {
         var dlg = new OpenFolderDialog

@@ -263,6 +263,7 @@ public class MainViewModel : ViewModelBase
 
     public async Task InitializeAsync()
     {
+        await _scriptService.InitializeAsync();
         var config = _scriptService.GetConfig();
         CurrentTileSize = config.DefaultTileSize;
         SelectedSortOrder = config.DefaultSortOrder;

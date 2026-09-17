@@ -265,12 +265,12 @@ public class SettingsViewModel : ViewModelBase
 
     private async Task ImportBackupAsync()
     {
-        var sourceFile = _dialogService.PickScriptFile();
+        var sourceFile = _dialogService.PickZipFile();
         if (string.IsNullOrWhiteSpace(sourceFile)) return;
 
         var confirm = await _dialogService.ShowConfirmationAsync(
             "Импорт конфигурации", 
-            "Внимание: Импорт заменит текущие настройки и скрипты резервной копией. Продолжить?");
+            "Внимание: Импорт восстановит скрипты, настройки и распределит файлы между PowerShell и CMD. Продолжить?");
 
         if (!confirm) return;
 
@@ -280,15 +280,16 @@ public class SettingsViewModel : ViewModelBase
             var success = await _backupService.ImportBackupAsync(sourceFile);
             if (success)
             {
-                BackupStatusMessage = "Конфигурация успешно восстановлена!";
-                await _dialogService.ShowMessageAsync("Импорт завершен", "Конфигурация успешно восстановлена.");
+                await _scriptService.InitializeAsync();
+                BackupStatusMessage = "Конфигурация успешно восстановлена! Скрипты распределены между PowerShell и CMD.";
+                await _dialogService.ShowMessageAsync("Импорт завершен", "Конфигурация успешно восстановлена!\nСкрипты распределены между PowerShell и CMD, плитки созданы.");
                 _onDataReloadNeeded();
                 LoadSettings();
             }
             else
             {
                 BackupStatusMessage = "Не удалось восстановить данные из указанного файла.";
-                await _dialogService.ShowErrorAsync("Ошибка импорта", "Не удалось восстановить данные.");
+                await _dialogService.ShowErrorAsync("Ошибка импорта", "Не удалось восстановить данные из архива.");
             }
         }
         catch (Exception ex)

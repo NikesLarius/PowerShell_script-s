@@ -10,6 +10,7 @@ public interface IDialogService
     Task<(bool Confirmed, bool DeletePhysicalFile)> ShowDeleteConfirmationAsync(string scriptTitle);
     
     string? PickScriptFile();
+    string? PickZipFile();
     string? PickFolder(string? defaultPath = null);
     string? PickSaveFile(string defaultFileName, string filter);
 }
