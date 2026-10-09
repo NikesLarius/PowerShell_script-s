@@ -190,24 +190,31 @@ Get-ChildItem -File | ForEach-Object {
             var json = await EncodingHelper.ReadTextAutoEncodingAsync(ScriptsJsonPath);
             var scripts = JsonSerializer.Deserialize<List<ScriptModel>>(json, _jsonOptions) ?? new List<ScriptModel>();
 
-            // Auto-resolve relative paths when project folder is moved or copied
+            bool modified = false;
+            // Auto-resolve paths when files or folders are moved, copied or nested
             foreach (var s in scripts)
             {
                 if (!string.IsNullOrWhiteSpace(s.FilePath))
                 {
                     if (!File.Exists(s.FilePath))
                     {
-                        var fileName = Path.GetFileName(s.FilePath);
-                        var sub = s.ScriptType == ScriptType.PowerShell ? "PowerShell" : "CMD";
-                        var candidate1 = Path.Combine(ScriptsDirectory, sub, fileName);
-                        var candidate2 = Path.Combine(ScriptsDirectory, fileName);
-                        var candidate3 = Path.Combine(RootDirectory, fileName);
-
-                        if (File.Exists(candidate1)) s.FilePath = candidate1;
-                        else if (File.Exists(candidate2)) s.FilePath = candidate2;
-                        else if (File.Exists(candidate3)) s.FilePath = candidate3;
+                        var resolved = ResolveScriptFilePath(s.FilePath, null, s.ScriptType);
+                        if (!string.IsNullOrWhiteSpace(resolved) && File.Exists(resolved) && !string.Equals(s.FilePath, resolved, StringComparison.OrdinalIgnoreCase))
+                        {
+                            s.FilePath = resolved;
+                            modified = true;
+                        }
                     }
                 }
+            }
+
+            if (modified)
+            {
+                try
+                {
+                    await SaveScriptsAsync(scripts);
+                }
+                catch { }
             }
 
             return scripts;
@@ -353,4 +360,85 @@ Get-ChildItem -File | ForEach-Object {
         EncodingHelper.WriteTextUtf8Bom(fullPath, content);
         return fullPath;
     }
+
+    public string? ResolveScriptFilePath(string? currentPath, string? fileName = null, ScriptType scriptType = ScriptType.PowerShell)
+    {
+        // 1. Direct path check
+        if (!string.IsNullOrWhiteSpace(currentPath) && File.Exists(currentPath))
+        {
+            return currentPath;
+        }
+
+        var targetFileName = !string.IsNullOrWhiteSpace(fileName)
+            ? fileName
+            : (!string.IsNullOrWhiteSpace(currentPath) ? Path.GetFileName(currentPath) : null);
+
+        if (string.IsNullOrWhiteSpace(targetFileName)) return null;
+
+        var sub = scriptType == ScriptType.PowerShell ? "PowerShell" : "CMD";
+
+        // 2. Direct candidates in standard folders
+        var candidate1 = Path.Combine(ScriptsDirectory, sub, targetFileName);
+        if (File.Exists(candidate1)) return candidate1;
+
+        var candidate2 = Path.Combine(ScriptsDirectory, targetFileName);
+        if (File.Exists(candidate2)) return candidate2;
+
+        var candidate3 = Path.Combine(RootDirectory, targetFileName);
+        if (File.Exists(candidate3)) return candidate3;
+
+        // 3. Check relative path if project moved or path was relative
+        if (!string.IsNullOrWhiteSpace(currentPath))
+        {
+            try
+            {
+                var relCandidate = Path.Combine(RootDirectory, currentPath);
+                if (File.Exists(relCandidate)) return relCandidate;
+
+                var scriptsIdx = currentPath.IndexOf("Scripts", StringComparison.OrdinalIgnoreCase);
+                if (scriptsIdx >= 0)
+                {
+                    var relSub = currentPath.Substring(scriptsIdx);
+                    var candidateRel = Path.Combine(RootDirectory, relSub);
+                    if (File.Exists(candidateRel)) return candidateRel;
+                }
+            }
+            catch { }
+        }
+
+        // 4. Recursive deep search in ScriptsDirectory (finds files in any nested subfolders)
+        if (Directory.Exists(ScriptsDirectory))
+        {
+            try
+            {
+                var matches = Directory.EnumerateFiles(ScriptsDirectory, targetFileName, SearchOption.AllDirectories).ToList();
+                if (matches.Count > 0)
+                {
+                    // Prioritize match in corresponding subfolder (PowerShell or CMD) if multiple exist
+                    var pref = matches.FirstOrDefault(m => m.Contains(Path.DirectorySeparatorChar + sub + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase));
+                    return pref ?? matches[0];
+                }
+            }
+            catch { }
+        }
+
+        // 5. Fallback: Search anywhere inside project RootDirectory (ignoring build/git directories)
+        if (Directory.Exists(RootDirectory))
+        {
+            try
+            {
+                var matches = Directory.EnumerateFiles(RootDirectory, targetFileName, SearchOption.AllDirectories)
+                    .Where(p => !p.Contains("\\.git\\") && !p.Contains("\\bin\\") && !p.Contains("\\obj\\") && !p.Contains("\\publish\\"))
+                    .ToList();
+                if (matches.Count > 0)
+                {
+                    return matches[0];
+                }
+            }
+            catch { }
+        }
+
+        return null;
+    }
 }
+

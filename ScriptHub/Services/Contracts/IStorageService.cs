@@ -31,4 +31,5 @@ public interface IStorageService
     bool FileExists(string path);
     bool IsPathInsideScriptsDirectory(string path);
     string EnsureScriptInScriptsDirectory(string? existingPath, string title, ScriptType scriptType, string content);
+    string? ResolveScriptFilePath(string? currentPath, string? fileName = null, ScriptType scriptType = ScriptType.PowerShell);
 }

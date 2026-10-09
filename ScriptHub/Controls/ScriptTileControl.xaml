@@ -85,7 +85,11 @@
                             Padding="6,2"
                             Background="{DynamicResource SystemFillColorCriticalBackgroundBrush}"
                             Visibility="{Binding IsFileMissing, Converter={StaticResource BoolToVisConv}}"
-                            ToolTip="Файл скрипта не найден на диске!">
+                            ToolTip="Файл скрипта не найден на диске! Нажмите, чтобы указать файл."
+                            Cursor="Hand">
+                        <Border.InputBindings>
+                            <MouseBinding Gesture="LeftClick" Command="{Binding RelinkFileCommand}" />
+                        </Border.InputBindings>
                         <StackPanel Orientation="Horizontal">
                             <ui:SymbolIcon Symbol="Warning20" FontSize="12" Foreground="{DynamicResource SystemFillColorCriticalBrush}" Margin="0,0,4,0" />
                             <TextBlock Text="Файл не найден" FontSize="11" Foreground="{DynamicResource SystemFillColorCriticalBrush}" />
@@ -325,6 +329,13 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             <Separator />
+                            <MenuItem Header="Указать файл на диске..."
+                                      Command="{Binding RelinkFileCommand}"
+                                      Visibility="{Binding IsFileMissing, Converter={StaticResource BoolToVisConv}}">
+                                <MenuItem.Icon>
+                                    <ui:SymbolIcon Symbol="FolderSearch20" />
+                                </MenuItem.Icon>
+                            </MenuItem>
                             <MenuItem Header="Открыть папку со скриптом" Command="{Binding OpenFolderCommand}">
                                 <MenuItem.Icon>
                                     <ui:SymbolIcon Symbol="FolderOpen20" />

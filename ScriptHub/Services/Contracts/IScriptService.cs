@@ -26,4 +26,5 @@ public interface IScriptService
     bool IsInsideScriptsFolder(string filePath);
     string CreateNewScriptFile(string title, ScriptType scriptType, string content);
     Task<string> EnsureScriptInScriptsFolderAsync(string? existingPath, string title, ScriptType scriptType, string content);
+    string? ResolveScriptPath(string? currentPath, ScriptType scriptType);
 }

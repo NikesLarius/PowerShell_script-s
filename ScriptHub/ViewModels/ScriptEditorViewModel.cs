@@ -179,7 +179,6 @@ public class ScriptEditorViewModel : ViewModelBase
 
         Title = script.Title;
         Description = script.Description;
-        FilePath = script.FilePath;
         ScriptType = script.ScriptType;
         SelectedCategoryId = script.CategoryId;
         Icon = script.Icon;
@@ -192,6 +191,19 @@ public class ScriptEditorViewModel : ViewModelBase
         ValidationError = "";
 
         RefreshCategories();
+
+        if (!string.IsNullOrWhiteSpace(script.FilePath) && !File.Exists(script.FilePath))
+        {
+            var resolved = _scriptService.ResolveScriptPath(script.FilePath, script.ScriptType);
+            if (!string.IsNullOrWhiteSpace(resolved) && File.Exists(resolved))
+            {
+                script.FilePath = resolved;
+                _editingScript.FilePath = resolved;
+                _ = _scriptService.SaveScriptAsync(script);
+            }
+        }
+
+        FilePath = script.FilePath;
 
         if (File.Exists(script.FilePath))
         {

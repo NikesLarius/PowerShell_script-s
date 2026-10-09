@@ -186,4 +186,9 @@ public class ScriptService : IScriptService
         EncodingHelper.WriteTextUtf8Bom(fullPath, content);
         return fullPath;
     }
+
+    public string? ResolveScriptPath(string? currentPath, ScriptType scriptType)
+    {
+        return _storageService.ResolveScriptFilePath(currentPath, null, scriptType);
+    }
 }

@@ -198,6 +198,7 @@ public class ScriptTileViewModel : ViewModelBase
     public ICommand SetPresetDownloadsCommand { get; }
     public ICommand SetPresetDesktopCommand { get; }
     public ICommand SetPresetScriptDirCommand { get; }
+    public ICommand RelinkFileCommand { get; }
 
     public ScriptTileViewModel(
         ScriptModel model,
@@ -226,6 +227,7 @@ public class ScriptTileViewModel : ViewModelBase
 
         ToggleExpandedCommand = new RelayCommand(() => IsExpanded = !IsExpanded);
         BrowseFolderCommand = new RelayCommand(BrowseFolder);
+        RelinkFileCommand = new RelayCommand(RelinkFile);
         
         SetPresetDownloadsCommand = new RelayCommand(() =>
         {
@@ -263,8 +265,53 @@ public class ScriptTileViewModel : ViewModelBase
         }
     }
 
+    private void RelinkFile()
+    {
+        var filter = _model.ScriptType switch
+        {
+            ScriptType.PowerShell => "PowerShell скрипты (*.ps1)|*.ps1|Все файлы (*.*)|*.*",
+            ScriptType.Batch or ScriptType.Cmd => "Командные файлы (*.bat;*.cmd)|*.bat;*.cmd|Все файлы (*.*)|*.*",
+            _ => "Файлы скриптов (*.ps1;*.bat;*.cmd)|*.ps1;*.bat;*.cmd|Все файлы (*.*)|*.*"
+        };
+
+        var currentDir = !string.IsNullOrWhiteSpace(_model.FilePath)
+            ? Path.GetDirectoryName(_model.FilePath)
+            : null;
+
+        var initialDir = !string.IsNullOrWhiteSpace(currentDir) && Directory.Exists(currentDir)
+            ? currentDir
+            : Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+        var dlg = new OpenFileDialog
+        {
+            Title = $"Указать файл для скрипта: {_model.Title}",
+            Filter = filter,
+            InitialDirectory = initialDir,
+            FileName = !string.IsNullOrWhiteSpace(_model.FilePath) ? Path.GetFileName(_model.FilePath) : ""
+        };
+
+        if (dlg.ShowDialog() == true && File.Exists(dlg.FileName))
+        {
+            _model.FilePath = dlg.FileName;
+            RefreshFileStatus();
+            _ = _scriptService.SaveScriptAsync(_model);
+            RefreshProperties();
+        }
+    }
+
     public void RefreshFileStatus()
     {
+        if (!string.IsNullOrWhiteSpace(_model.FilePath) && !File.Exists(_model.FilePath))
+        {
+            var resolved = _scriptService.ResolveScriptPath(_model.FilePath, _model.ScriptType);
+            if (!string.IsNullOrWhiteSpace(resolved) && File.Exists(resolved) && !string.Equals(_model.FilePath, resolved, StringComparison.OrdinalIgnoreCase))
+            {
+                _model.FilePath = resolved;
+                _ = _scriptService.SaveScriptAsync(_model);
+                OnPropertyChanged(nameof(FilePath));
+            }
+        }
+
         IsFileMissing = !string.IsNullOrWhiteSpace(_model.FilePath) && !File.Exists(_model.FilePath);
     }
 

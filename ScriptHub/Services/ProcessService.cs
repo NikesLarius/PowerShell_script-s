@@ -15,11 +15,19 @@ public class ProcessService : IProcessService
 {
     private Process? _currentProcess;
     private readonly object _lock = new();
+    private readonly IStorageService? _storageService;
+    private readonly IScriptService? _scriptService;
 
     public bool IsRunning => _currentProcess is { HasExited: false };
     public ScriptModel? CurrentlyRunningScript { get; private set; }
 
     public event EventHandler<bool>? ExecutionStateChanged;
+
+    public ProcessService(IStorageService storageService, IScriptService scriptService)
+    {
+        _storageService = storageService;
+        _scriptService = scriptService;
+    }
 
     public string GetPowerShellPath(bool preferPwsh7 = false, string? customPath = null)
     {
@@ -121,6 +129,20 @@ public class ProcessService : IProcessService
         }
         AppendOutput($"> Запуск от администратора: {(script.RunAsAdmin ? "Да" : "Нет")}", false);
         AppendOutput(new string('-', 50), false);
+
+        if (!File.Exists(script.FilePath) && _storageService != null)
+        {
+            var resolved = _storageService.ResolveScriptFilePath(script.FilePath, null, script.ScriptType);
+            if (!string.IsNullOrWhiteSpace(resolved) && File.Exists(resolved))
+            {
+                script.FilePath = resolved;
+                if (_scriptService != null)
+                {
+                    _ = _scriptService.SaveScriptAsync(script);
+                }
+                AppendOutput($"> Файл скрипта автоматически найден по новому пути: {resolved}", false);
+            }
+        }
 
         if (!File.Exists(script.FilePath))
         {

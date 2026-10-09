@@ -181,8 +181,16 @@ public class BackupService : IBackupService
                 var isCmd = fileName.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase) || s.ScriptType == ScriptType.Cmd;
 
                 s.ScriptType = isPs ? ScriptType.PowerShell : (isCmd ? ScriptType.Cmd : ScriptType.Batch);
-                var targetDir = isPs ? _storageService.PowerShellScriptsDirectory : _storageService.CmdScriptsDirectory;
-                s.FilePath = Path.Combine(targetDir, fileName);
+                var resolved = _storageService.ResolveScriptFilePath(s.FilePath, fileName, s.ScriptType);
+                if (!string.IsNullOrWhiteSpace(resolved) && File.Exists(resolved))
+                {
+                    s.FilePath = resolved;
+                }
+                else
+                {
+                    var targetDir = isPs ? _storageService.PowerShellScriptsDirectory : _storageService.CmdScriptsDirectory;
+                    s.FilePath = Path.Combine(targetDir, fileName);
+                }
 
                 if (string.IsNullOrWhiteSpace(s.Title))
                 {
